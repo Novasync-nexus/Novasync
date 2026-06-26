@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PRISMA | Join the Collective</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#1b1c10",
+                    "secondary": "#c8c6c5",
+                    "outline-variant": "#48473f",
+                    "on-primary-fixed": "#1c1c10",
+                    "on-surface-variant": "#c9c6bc",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "on-primary-container": "#616051",
+                    "tertiary-fixed": "#e5e2e1",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#474646",
+                    "surface-dim": "#131409",
+                    "surface": "#131409",
+                    "primary-fixed": "#e6e3d0",
+                    "secondary-container": "#4a4949",
+                    "primary-container": "#dedbc8",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary": "#fbf7e4",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "surface-container-lowest": "#0e0f05",
+                    "outline": "#939187",
+                    "on-primary": "#323124",
+                    "on-surface": "#e5e3cf",
+                    "tertiary-container": "#dcdad9",
+                    "on-background": "#e5e3cf",
+                    "inverse-on-surface": "#303124",
+                    "tertiary": "#f9f6f6",
+                    "inverse-primary": "#605f50",
+                    "surface-bright": "#393a2c",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-error": "#690005",
+                    "background": "#131409",
+                    "surface-variant": "#353628",
+                    "primary-fixed-dim": "#cac7b5",
+                    "surface-tint": "#cac7b5",
+                    "on-primary-fixed-variant": "#484739",
+                    "on-tertiary": "#303030",
+                    "on-tertiary-fixed": "#1b1c1c",
+                    "inverse-surface": "#e5e3cf",
+                    "on-secondary-container": "#bab8b7",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-tertiary-container": "#605f5f",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#353628",
+                    "surface-container": "#1f2014",
+                    "on-secondary": "#313030",
+                    "surface-container-high": "#2a2b1e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "hero-inset": "4rem",
+                    "section-padding": "8rem",
+                    "gutter": "2rem",
+                    "stack-sm": "0.5rem",
+                    "stack-md": "1.5rem",
+                    "stack-lg": "4rem"
+            },
+            "fontFamily": {
+                    "accent-italic": ["Instrument Serif"],
+                    "body-lg": ["Almarai"],
+                    "headline-md": ["Almarai"],
+                    "display-lg-mobile": ["Almarai"],
+                    "label-sm": ["Almarai"],
+                    "headline-lg": ["Almarai"],
+                    "display-lg": ["Almarai"],
+                    "body-md": ["Almarai"]
+            },
+            "fontSize": {
+                    "accent-italic": ["1.1em", {"fontWeight": "400"}],
+                    "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                    "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            margin: 0;
+            overflow: hidden;
+        }
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .liquid-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .liquid-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #DEDBC8;
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(222, 219, 200, 0.2);
+        }
+        .prisma-reveal {
+            overflow: hidden;
+            position: relative;
+        }
+        .prisma-reveal::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: #DEDBC8;
+            transition: width 1.2s ease, left 1.2s ease;
+        }
+        .prisma-reveal.active::after {
+            width: 100%;
+            left: 0;
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen font-body-md text-on-surface">
+<!-- Cinematic Video Background Placeholder -->
+<div class="fixed inset-0 z-0">
+<div class="w-full h-full object-cover brightness-50" data-alt="A cinematic, high-definition background featuring slow-moving, dark abstract smoke and liquid textures swirling in a deep black void. The lighting is moody and directional, with subtle warm highlights of cream and gold catching the edges of the moving shapes. The aesthetic is extremely minimalist, high-prestige, and evokes a sense of deep creative mystery. The overall atmosphere is premium and polished, perfectly complementing a luxury digital studio brand." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPlykKh1fnAePqPmGjuatDIiqHhM2fyWeFTIaTtnIZw8KmJlEHVmp8Pzx88EQd_aQe5pQkuiKUJq2MG3DY90zLRl0JYwocLfYdlbG6jQ_XdqCK7krpFdNtUv_DvRD_QsNnh3s5NouyG8JEpiiWqDXzFR3BpQi7gdxBPcWZwrsCZ3AWipB7C6GyjUjww-AjVe4o_OSDmkrncMMOaP23l3Zim6lJOb05NrRZdmRSoMWB-5dMem7IKCrE1oug--TENKJj1z9Cr_4-VhC2')"></div>
+<div class="absolute inset-0 bg-black/40"></div>
+</div>
+<!-- Main Container -->
+<main class="relative z-10 w-full max-w-xl px-gutter">
+<div class="liquid-glass rounded-xl p-10 md:p-12 fade-in-up">
+<!-- Heading -->
+<header class="text-center mb-stack-lg">
+<h1 class="font-accent-italic text-display-lg-mobile md:text-headline-lg italic tracking-tight text-white mb-2 prisma-reveal" id="header-text">
+                    Join the Collective
+                </h1>
+<p class="font-body-md text-on-surface-variant delay-1 fade-in-up">
+                    Entry into the PRISMA creative ecosystem.
+                </p>
+</header>
+<!-- Sign Up Form -->
+<form class="space-y-stack-md delay-2 fade-in-up" onsubmit="event.preventDefault();">
+<div class="space-y-stack-sm">
+<label class="font-label-sm uppercase tracking-widest text-on-surface-variant opacity-60" for="name">Full Name</label>
+<input class="w-full px-6 py-4 rounded-lg liquid-input text-white font-body-md placeholder:text-outline-variant/50" id="name" placeholder="ALEXANDER VANCE" type="text"/>
+</div>
+<div class="space-y-stack-sm">
+<label class="font-label-sm uppercase tracking-widest text-on-surface-variant opacity-60" for="email">Email Address</label>
+<input class="w-full px-6 py-4 rounded-lg liquid-input text-white font-body-md placeholder:text-outline-variant/50" id="email" placeholder="CONNECT@STUDIO.COM" type="email"/>
+</div>
+<div class="space-y-stack-sm">
+<label class="font-label-sm uppercase tracking-widest text-on-surface-variant opacity-60" for="password">Password</label>
+<input class="w-full px-6 py-4 rounded-lg liquid-input text-white font-body-md placeholder:text-outline-variant/50" id="password" placeholder="••••••••" type="password"/>
+</div>
+<!-- CTA Button -->
+<div class="pt-stack-md">
+<button class="w-full py-5 rounded-full bg-primary-container text-on-primary font-label-sm uppercase tracking-widest font-bold hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-xl shadow-black/20">
+                        Create Account
+                    </button>
+</div>
+</form>
+<!-- Footer Links -->
+<footer class="mt-stack-lg text-center space-y-stack-md delay-3 fade-in-up">
+<p class="font-body-md text-on-surface-variant">
+                    Already have an account? 
+                    <a class="text-white font-bold border-b border-primary-container/30 hover:border-primary-container transition-colors" href="#">Login</a>
+</p>
+<p class="font-label-sm text-on-surface-variant/40 leading-relaxed max-w-xs mx-auto">
+                    By signing up, you agree to our Terms of Service and Privacy Policy. All artistic assets are protected.
+                </p>
+</footer>
+</div>
+</main>
+<!-- Global Decoration Elements -->
+<div class="fixed top-12 left-12 z-20 pointer-events-none">
+<span class="font-headline-md font-extrabold tracking-tighter text-white opacity-20">PRISMA</span>
+</div>
+<script>
+        // Trigger reveal animation after a small delay
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('header-text').classList.add('active');
+            }, 800);
+        });
+
+        // Simple form interaction
+        const inputs = document.querySelectorAll('.liquid-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').style.opacity = '1';
+                input.parentElement.querySelector('label').style.color = '#DEDBC8';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').style.opacity = '0.6';
+                input.parentElement.querySelector('label').style.color = '';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PRISMA | Creative Studio</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;family=Instrument+Serif:ital@1&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- GSAP for Smooth Animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "primary-container": "#dedbc8",
+                  "on-primary": "#323124",
+                  "surface-variant": "#353628",
+                  "secondary-fixed": "#e5e2e1",
+                  "inverse-surface": "#e5e3cf",
+                  "on-surface-variant": "#c9c6bc",
+                  "surface-container": "#1f2014",
+                  "surface-container-lowest": "#0e0f05",
+                  "tertiary": "#f9f6f6",
+                  "on-secondary-container": "#bab8b7",
+                  "outline-variant": "#48473f",
+                  "background": "#000000",
+                  "outline": "#939187",
+                  "error-container": "#93000a",
+                  "surface-dim": "#131409",
+                  "surface-bright": "#393a2c",
+                  "tertiary-container": "#dcdad9",
+                  "surface-container-highest": "#353628",
+                  "on-tertiary": "#303030",
+                  "on-secondary-fixed": "#1c1b1b",
+                  "on-tertiary-container": "#605f5f",
+                  "tertiary-fixed-dim": "#c8c6c5",
+                  "on-error-container": "#ffdad6",
+                  "on-secondary": "#313030",
+                  "on-tertiary-fixed": "#1b1c1c",
+                  "secondary": "#c8c6c5",
+                  "surface-container-high": "#2a2b1e",
+                  "surface-container-low": "#1b1c10",
+                  "primary": "#dedbc8",
+                  "secondary-fixed-dim": "#c8c6c5",
+                  "error": "#ffb4ab",
+                  "on-error": "#690005",
+                  "on-primary-fixed": "#1c1c10",
+                  "tertiary-fixed": "#e5e2e1",
+                  "on-background": "#e5e3cf",
+                  "secondary-container": "#4a4949",
+                  "surface": "#131409",
+                  "on-secondary-fixed-variant": "#474646",
+                  "inverse-on-surface": "#303124",
+                  "primary-fixed-dim": "#cac7b5",
+                  "on-tertiary-fixed-variant": "#474746",
+                  "on-primary-fixed-variant": "#484739",
+                  "inverse-primary": "#605f50",
+                  "surface-tint": "#cac7b5",
+                  "on-surface": "#e5e3cf",
+                  "on-primary-container": "#616051",
+                  "primary-fixed": "#e6e3d0"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.125rem",
+                  "lg": "0.25rem",
+                  "xl": "0.5rem",
+                  "2xl": "1rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "stack-md": "1.5rem",
+                  "section-padding": "8rem",
+                  "stack-sm": "0.5rem",
+                  "stack-lg": "4rem",
+                  "hero-inset": "4rem",
+                  "gutter": "2rem",
+                  "container-max": "1440px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Almarai", "sans-serif"],
+                  "display-lg-mobile": ["Almarai", "sans-serif"],
+                  "headline-lg": ["Almarai", "sans-serif"],
+                  "accent-italic": ["Instrument Serif", "serif"],
+                  "label-sm": ["Almarai", "sans-serif"],
+                  "display-lg": ["Almarai", "sans-serif"],
+                  "headline-md": ["Almarai", "sans-serif"],
+                  "body-md": ["Almarai", "sans-serif"]
+          },
+          "fontSize": {
+                  "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                  "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                  "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                  "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                  "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                  "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                  "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Custom CSS Overlays */
+    .noise-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.7;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .bg-noise {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .glass-pill {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(225, 224, 204, 0.1);
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Prisma Reveal Animation */
+    .prisma-reveal-line {
+      height: 1px;
+      width: 0%;
+      background: #DEDBC8;
+      transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    .animated-letter {
+      transition: opacity 0.3s ease;
+    }
+
+    /* Hide scrollbar */
+    body::-webkit-scrollbar {
+      display: none;
+    }
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      background-color: #000000;
+      color: #E1E0CC;
+    }
+  </style>
+</head>
+<body class="font-body-md overflow-x-hidden">
+<!-- TopNavBar Navigation Shell (Shared Component) -->
+<nav class="fixed top-8 left-1/2 -translate-x-1/2 w-fit px-8 py-4 rounded-full border border-outline-variant/10 bg-background/80 backdrop-blur-2xl flex items-center gap-stack-md z-50">
+<div class="font-headline-md text-headline-md font-extrabold tracking-tighter text-primary mr-8">PRISMA</div>
+<div class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md uppercase tracking-widest text-primary font-bold border-b border-primary/40 pb-1" href="#">Our story</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Collective</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Workshops</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Programs</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Inquiries</a>
+</div>
+<button class="ml-8 bg-primary text-on-primary px-6 py-2 rounded-full font-label-sm uppercase tracking-widest hover:scale-105 transition-transform duration-500 active:scale-95">Connect</button>
+</nav>
+<!-- Hero Section -->
+<section class="h-screen w-full p-4 md:p-6 overflow-hidden relative">
+<div class="w-full h-full rounded-2xl overflow-hidden relative bg-black shadow-2xl">
+<!-- Background Video -->
+<video autoplay="" class="absolute inset-0 w-full h-full object-cover opacity-60" loop="" muted="" playsinline="">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4"/>
+</video>
+<!-- Overlays -->
+<div class="noise-overlay"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
+<!-- Hero Content -->
+<div class="relative h-full flex flex-col items-center justify-center text-center z-20 px-gutter">
+<h1 class="font-display-lg text-[19vw] md:text-[26vw] leading-none tracking-tighter text-primary flex items-start select-none" id="hero-title">
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">P</span>
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">R</span>
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">I</span>
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">S</span>
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">M</span>
+<span class="inline-block translate-y-12 opacity-0" data-pull-up="">A</span>
+<sup class="text-[4vw] md:text-[3vw] mt-[5vw] opacity-0" data-pull-up="">*</sup>
+</h1>
+<div class="max-w-2xl mt-stack-lg opacity-0 translate-y-8" id="hero-desc">
+<p class="font-body-lg text-primary text-balance mb-stack-md">
+            Prisma is a worldwide network of avant-garde visual creators. We redefine cinematic boundaries through technical precision and raw emotional storytelling.
+          </p>
+<button class="group flex items-center gap-2 mx-auto bg-primary text-on-primary px-8 py-4 rounded-full font-label-sm uppercase tracking-widest transition-all duration-500 hover:gap-4">
+            Join the lab
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="bg-black py-section-padding px-gutter relative">
+<div class="max-w-6xl mx-auto">
+<div class="bg-[#101010] p-12 md:p-24 rounded-2xl border border-white/5 relative overflow-hidden">
+<div class="absolute inset-0 bg-noise"></div>
+<h2 class="font-headline-lg text-primary mb-12 relative z-10 leading-tight">
+          I am Marcus Chen, <span class="font-accent-italic text-primary/80">a self-taught director</span>. I have skills in color grading, visual effects, and narrative design.
+        </h2>
+<!-- Animated Letter Reveal Body Text -->
+<div class="font-body-lg text-on-surface-variant max-w-3xl space-y-6 relative z-10" id="about-text">
+<p class="reveal-text">
+            For the past decade, I have obsessively explored the intersection of light and digital manipulation. Prisma was born from a desire to formalize this exploration into a cohesive studio practice. We don't just make films; we construct atmospheres that linger in the psyche.
+          </p>
+<p class="reveal-text">
+            Our approach is deeply collaborative and fiercely independent. By stripping away the bloat of traditional agency models, we maintain a direct line from inspiration to execution, ensuring that every frame remains true to its original intention.
+          </p>
+</div>
+<div class="mt-12 flex justify-center">
+<div class="prisma-reveal-line" id="reveal-line"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="bg-black py-section-padding px-gutter relative">
+<div class="absolute inset-0 bg-noise opacity-5"></div>
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Feature Card 1 (Video) -->
+<div class="relative h-[500px] rounded-2xl overflow-hidden group">
+<video autoplay="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loop="" muted="" playsinline="">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4" type="video/mp4"/>
+</video>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-8 left-8">
+<p class="font-label-sm text-primary uppercase mb-2">Portfolio</p>
+<h3 class="font-headline-md text-primary font-bold">Directorial Reel</h3>
+</div>
+</div>
+<!-- Feature Card 2 -->
+<div class="bg-[#212121] p-8 rounded-2xl flex flex-col border border-white/5 transition-colors hover:border-primary/20">
+<div class="mb-8 w-12 h-12">
+<img class="w-full h-full object-contain" data-alt="A conceptual minimalist 3D render of a geometric storyboard layout, floating in a void of deep charcoal and matte black. The lighting is harsh and cinematic, highlighting the clean edges of the frames. Subtle cream accents reflect off the polished surfaces, creating a high-end luxury tech aesthetic consistent with cinematic studio branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdtHhSe7uF8LoVkEk7gjyimLuIPulQda4Cg-G-7uVhwsMnOCJ3ROMmizQYJUurSKsPNTlc6ogHmqRPsTx-us_dfJD_ygu73zyqQ8EactzbvJ9I1oZRmDWjy1pglCpo3iQUuO6z_JrwSphm28U1M7CRm5Y6C32_bVV_XHswD7j8Jqs8-aBEWtXyRi3e_krAjRMtiQCxVmYvnh2f1oCHDU2QtvwXbOrulKmOS0iGizvezKE2x0VjxZEvLhJ9dJ-9sxTLNK-fkpvhyNYf"/>
+</div>
+<h3 class="font-headline-md text-primary font-bold mb-6">Project Storyboard</h3>
+<ul class="space-y-4 mb-auto">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Non-linear sequencing</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Real-time color mapping</span>
+</li>
+</ul>
+<a class="group mt-12 flex items-center gap-2 text-primary font-label-sm uppercase tracking-widest border-b border-primary/20 pb-1 w-fit" href="#">
+            Learn more
+            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+<!-- Feature Card 3 -->
+<div class="bg-[#212121] p-8 rounded-2xl flex flex-col border border-white/5 transition-colors hover:border-primary/20">
+<div class="mb-8 w-12 h-12">
+<img class="w-full h-full object-contain" data-alt="A macro close-up of a complex digital lens aperture, rendered in high-contrast monochromatic shades of black and dark grey. The internal mechanics are visible and intricate, with a single, sharp cream light reflecting off the inner rim. The overall mood is mysterious, intentional, and high-tech, evoking the feeling of a premium film studio's proprietary hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4LMbj93IrLaiCo5oQ4We2_zG_S7tDTphJLzm8Ygpr3RC8rt0KAP3LXcFQk-HGFhkC3UrCGnUCOk68OFFJLXEb1tVjLbYEMeuwbNUiK08ip9rcOb-KPzBjLxzGAU_WmpyYEamQezC4fHI3o8IOOMgDw63MlAMAL9S-ydhrQtrudrGPqNurwUqsk7nS0_X7F6PXSvWG08XKHGaFy_wodm1KFQ-GLsqaqbB08gKKbEmnSwUiKYvrSWRFarxF7VWbqpmSrwQ_V2iobS0o"/>
+</div>
+<h3 class="font-headline-md text-primary font-bold mb-6">Smart Critiques</h3>
+<ul class="space-y-4 mb-auto">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Frame-by-frame analysis</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Sentiment tracking AI</span>
+</li>
+</ul>
+<a class="group mt-12 flex items-center gap-2 text-primary font-label-sm uppercase tracking-widest border-b border-primary/20 pb-1 w-fit" href="#">
+            Learn more
+            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+<!-- Feature Card 4 -->
+<div class="bg-[#212121] p-8 rounded-2xl flex flex-col border border-white/5 transition-colors hover:border-primary/20">
+<div class="mb-8 w-12 h-12">
+<img class="w-full h-full object-contain" data-alt="An abstract representation of an 'Immersion Capsule', appearing as a dark, translucent spherical structure containing swirling smoke-like digital particles. The sphere sits on a dark reflective surface, catching faint highlights of cream and warm grey. The lighting is moody and ethereal, suggesting a space for deep concentration and sensory creative experiences within a high-end minimalist design framework." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc2pGNO3UMczfPmHc-ZeiEmjXIXIBhecVEtKCDoqdQvvllJqgbHdqin2w2n4ERo9mjcIPOsBK_cHt0dGGoDOfbbhzZbY_S22sZ1WY3ZXWijxyYGwnDcx-gjcDHs24krYV2Ea-V_242IR5S5ud3ZsXfJpjkqC_Cc-0x9iDwvPucSKL_g40dbdZsv1BvTATMMoyNAL1UQj-HZoKKqUhCJO-FeQdNCc0-N6XUcGu4WqY4mTleXLa4wDAuW2bvsDDgtkemBD6gqhgkYnRo"/>
+</div>
+<h3 class="font-headline-md text-primary font-bold mb-6">Immersion Capsule</h3>
+<ul class="space-y-4 mb-auto">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Spatial audio sync</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-md text-on-surface-variant">Focus lock isolation</span>
+</li>
+</ul>
+<a class="group mt-12 flex items-center gap-2 text-primary font-label-sm uppercase tracking-widest border-b border-primary/20 pb-1 w-fit" href="#">
+            Learn more
+            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer (Shared Component) -->
+<footer class="bg-background">
+<div class="max-w-7xl mx-auto px-gutter py-stack-lg flex flex-col md:flex-row justify-between items-center border-t border-outline-variant/5">
+<div class="font-headline-lg text-headline-lg text-primary mb-8 md:mb-0">PRISMA</div>
+<div class="flex gap-8 mb-8 md:mb-0">
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Terms</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Instagram</a>
+</div>
+<div class="font-label-sm text-label-sm tracking-widest text-on-secondary-container opacity-60">
+        © 2024 PRISMA CREATIVE STUDIO. ALL RIGHTS RESERVED.
+      </div>
+</div>
+</footer>
+<script>
+    // Registration of ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero Pull-Up Animation
+    gsap.to("[data-pull-up]", {
+      y: 0,
+      opacity: 1,
+      duration: 1.2,
+      stagger: 0.1,
+      ease: "power4.out",
+      delay: 0.5
+    });
+
+    gsap.to("#hero-desc", {
+      y: 0,
+      opacity: 1,
+      duration: 1.5,
+      ease: "power3.out",
+      delay: 1.5
+    });
+
+    // About Text Character Split & Scroll Animation
+    const aboutTextElements = document.querySelectorAll('.reveal-text');
+    aboutTextElements.forEach(el => {
+      const text = el.textContent.trim();
+      el.innerHTML = text.split('').map(char => 
+        `<span class="animated-letter opacity-[0.2]">${char}</span>`
+      ).join('');
+
+      gsap.to(el.querySelectorAll('.animated-letter'), {
+        opacity: 1,
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: el,
+          start: "top 80%",
+          end: "top 20%",
+          scrub: 1
+        }
+      });
+    });
+
+    // Prisma Reveal Line
+    gsap.to("#reveal-line", {
+      width: "100%",
+      scrollTrigger: {
+        trigger: "#reveal-line",
+        start: "top 95%",
+        end: "top 70%",
+        scrub: true
+      }
+    });
+
+    // Feature Cards Entrance
+    gsap.from(".grid > div", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.2,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: ".grid",
+        start: "top 85%"
+      }
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 100) {
+        nav.classList.add('scale-95', 'opacity-80');
+      } else {
+        nav.classList.remove('scale-95', 'opacity-80');
+      }
+    });
+  </script>
+</body></html>

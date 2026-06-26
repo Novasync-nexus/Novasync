@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ASME | Know it then all</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Frameworks -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#1c1b1b",
+              "surface-container-low": "#1b1c10",
+              "surface-container-highest": "#353628",
+              "on-tertiary-container": "#605f5f",
+              "surface": "#131409",
+              "tertiary-fixed-dim": "#c8c6c5",
+              "surface-bright": "#393a2c",
+              "on-primary-container": "#616051",
+              "on-secondary-container": "#bab8b7",
+              "secondary-container": "#4a4949",
+              "error-container": "#93000a",
+              "on-primary-fixed": "#1c1c10",
+              "inverse-primary": "#605f50",
+              "on-background": "#e5e3cf",
+              "primary-fixed-dim": "#cac7b5",
+              "error": "#ffb4ab",
+              "secondary": "#c8c6c5",
+              "on-tertiary": "#303030",
+              "on-error-container": "#ffdad6",
+              "primary": "#fbf7e4",
+              "on-tertiary-fixed": "#1b1c1c",
+              "on-primary-fixed-variant": "#484739",
+              "on-error": "#690005",
+              "surface-container-lowest": "#0e0f05",
+              "outline": "#939187",
+              "on-secondary": "#313030",
+              "tertiary": "#f9f6f6",
+              "tertiary-fixed": "#e5e2e1",
+              "on-primary": "#323124",
+              "surface-container-high": "#2a2b1e",
+              "secondary-fixed": "#e5e2e1",
+              "surface-variant": "#353628",
+              "background": "#000000",
+              "on-surface": "#ffffff",
+              "secondary-fixed-dim": "#c8c6c5",
+              "tertiary-container": "#dcdad9",
+              "inverse-surface": "#e5e3cf",
+              "surface-tint": "#cac7b5",
+              "on-surface-variant": "#c9c6bc",
+              "on-tertiary-fixed-variant": "#474746",
+              "primary-container": "#dedbc8",
+              "surface-container": "#1f2014",
+              "outline-variant": "#48473f",
+              "inverse-on-surface": "#303124",
+              "surface-dim": "#131409",
+              "primary-fixed": "#e6e3d0",
+              "on-secondary-fixed-variant": "#474646"
+            },
+            fontFamily: {
+              "body-md": ["Almarai", "sans-serif"],
+              "accent-italic": ["Instrument Serif", "serif"],
+              "display-lg": ["Instrument Serif", "serif"],
+              "headline-lg": ["Almarai", "sans-serif"],
+              "headline-md": ["Almarai", "sans-serif"]
+            },
+            spacing: {
+              "stack-sm": "0.5rem",
+              "stack-md": "1.5rem",
+              "section-padding": "8rem",
+              "hero-inset": "4rem",
+              "stack-lg": "4rem",
+              "gutter": "2rem"
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Almarai', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            position: relative;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .liquid-glass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            padding: 1.4px;
+            border-radius: inherit;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.45) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.45) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .text-white-80 { color: rgba(255, 255, 255, 0.8); }
+        .text-white-40 { color: rgba(255, 255, 255, 0.4); }
+
+        .italic-em {
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+        }
+
+        video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-video-fade {
+            transition: opacity 500ms ease-in-out;
+        }
+
+        @keyframes pullUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-pull-up {
+            animation: pullUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-background">
+<!-- TopNavBar -->
+<header class="fixed top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50">
+<nav class="liquid-glass rounded-full px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">public</span>
+<span class="font-headline-md text-headline-md font-extrabold tracking-tighter text-on-surface">ASME</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-on-surface-variant font-body-md uppercase tracking-widest text-[12px]">
+<a class="hover:text-white transition-colors" href="#features">Features</a>
+<a class="hover:text-white transition-colors" href="#pricing">Pricing</a>
+<a class="hover:text-white transition-colors" href="#about">About</a>
+</div>
+<div class="flex items-center gap-6">
+<a class="font-body-md text-[12px] uppercase tracking-widest text-white-80 hover:text-white transition-colors" href="#">Sign Up</a>
+<button class="liquid-glass rounded-full px-6 py-2 text-[12px] uppercase tracking-widest hover:scale-105 transition-transform">
+                    Login
+                </button>
+</div>
+</nav>
+</header>
+<!-- Section 1: Hero -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<video autoplay="" class="hero-video-fade w-full h-full object-cover" data-alt="A cinematic, high-resolution aerial shot of a minimalist, dark ocean at midnight, with subtle liquid-like textures and slow-moving waves reflecting faint, ethereal light. The atmosphere is prestigious, moody, and intentionally dark, aligning with a premium creative brand aesthetic." id="heroVideo" muted="" playsinline="" poster="placeholder">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_074625_a81f018a-956b-43fb-9aee-4d1508e30e6a.mp4" type="video/mp4"/>
+</video>
+<div class="absolute inset-0 bg-black/40"></div>
+</div>
+<div class="relative z-10 text-center px-gutter flex flex-col items-center gap-stack-md max-w-4xl mt-20">
+<h1 class="font-display-lg text-[64px] md:text-[110px] leading-tight tracking-tighter animate-pull-up">
+                Know it then <span class="italic-em">*all*</span>
+</h1>
+<div class="w-full max-w-md mt-4 animate-pull-up" style="animation-delay: 0.2s;">
+<div class="liquid-glass rounded-full flex items-center p-1 pl-6 focus-within:ring-1 ring-white/20 transition-all">
+<input class="bg-transparent border-none focus:ring-0 text-white placeholder:text-white-40 w-full font-body-md" placeholder="Enter your email" type="email"/>
+<button class="bg-white text-black p-3 rounded-full flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">arrow_right_alt</span>
+</button>
+</div>
+<p class="mt-4 text-white-40 font-body-md text-[14px] uppercase tracking-[0.2em]">Become part of the collective</p>
+</div>
+<div class="mt-8 animate-pull-up" style="animation-delay: 0.4s;">
+<button class="liquid-glass rounded-full px-12 py-4 text-[14px] uppercase tracking-widest hover:bg-white/5 transition-colors">
+                    Manifesto
+                </button>
+</div>
+</div>
+<footer class="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-10">
+<button class="liquid-glass w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button class="liquid-glass w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</button>
+<button class="liquid-glass w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</button>
+</footer>
+</section>
+<!-- Section 2: About -->
+<section class="py-section-padding px-hero-inset bg-black flex flex-col items-center text-center" id="about">
+<div class="reveal-on-scroll flex flex-col items-center max-w-5xl">
+<span class="text-white-40 uppercase tracking-[0.3em] font-label-sm text-label-sm mb-stack-md">About Us</span>
+<h2 class="font-headline-lg text-[32px] md:text-[56px] leading-[1.1] font-light">
+                Pioneering then ideas for minds that then <span class="italic-em text-white-80">create</span>, <span class="italic-em text-white-80">build</span>, and <span class="italic-em text-white-80">inspire</span>.
+            </h2>
+</div>
+</section>
+<!-- Section 3: Featured Video -->
+<section class="px-gutter pb-section-padding">
+<div class="max-w-7xl mx-auto relative rounded-[2rem] overflow-hidden aspect-video reveal-on-scroll">
+<video autoplay="" class="w-full h-full object-cover" data-alt="A detailed video still of a sophisticated architectural structure in a desert landscape at dusk, featuring dramatic contrast, clean lines, and a cinematic quality. The lighting is low-key, highlighting the textures of smooth concrete and glass against a deep indigo sky, embodying luxury and minimalist innovation." loop="" muted="" playsinline="" poster="placeholder">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_054547_9875cfc5-155a-4229-8ec8-b7ba7125cbf8.mp4" type="video/mp4"/>
+</video>
+<div class="absolute bottom-8 left-8 right-8">
+<div class="liquid-glass rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+<span class="font-display-lg text-[24px] md:text-[32px]">Our Approach</span>
+<button class="liquid-glass rounded-full px-10 py-3 text-[12px] uppercase tracking-widest hover:bg-white/10 transition-all">
+                        Explore more
+                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Philosophy -->
+<section class="py-section-padding px-gutter bg-black">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-stack-lg items-center">
+<div class="reveal-on-scroll order-2 md:order-1">
+<div class="rounded-3xl overflow-hidden aspect-[4/5] liquid-glass">
+<video autoplay="" class="w-full h-full object-cover grayscale opacity-60" data-alt="A surreal, slow-motion shot of liquid obsidian swirling gracefully in a dark void. The reflections on the liquid surface are sharp and white, creating a high-contrast cinematic effect. The movement is rhythmic and hypnotic, representing fluid innovation and visionary thinking." loop="" muted="" playsinline="" poster="placeholder">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4" type="video/mp4"/>
+</video>
+</div>
+</div>
+<div class="reveal-on-scroll order-1 md:order-2 space-y-stack-lg">
+<h2 class="font-display-lg text-[56px] leading-none">Innovation then <br/><span class="text-white-40 italic-em">x Vision</span></h2>
+<div class="space-y-stack-md pt-stack-md border-t border-white/10">
+<div>
+<h4 class="font-headline-md text-[20px] mb-2 uppercase tracking-widest">Choose your space</h4>
+<p class="text-white-40 font-body-md leading-relaxed">Defining the boundaries of what is possible through meticulous craftsmanship and unyielding curiosity.</p>
+</div>
+<div class="w-full h-px bg-white/5"></div>
+<div>
+<h4 class="font-headline-md text-[20px] mb-2 uppercase tracking-widest">Shape the future</h4>
+<p class="text-white-40 font-body-md leading-relaxed">We don't just observe trends; we synthesize new realities for brands that lead and individuals that dare.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Services -->
+<section class="py-section-padding px-gutter bg-black relative">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6 reveal-on-scroll">
+<div>
+<span class="text-white-40 uppercase tracking-[0.3em] font-label-sm text-label-sm">What we do</span>
+<h2 class="font-display-lg text-[64px] mt-2">Our services</h2>
+</div>
+<p class="max-w-xs text-white-40 font-body-md">A dual pillar approach to creative excellence, blending analytical rigor with artistic intuition.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Service 1 -->
+<div class="liquid-glass rounded-[2.5rem] p-10 flex flex-col gap-8 reveal-on-scroll group">
+<div class="aspect-square rounded-3xl overflow-hidden relative">
+<video autoplay="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="A minimalist laboratory setting with abstract digital displays showing glowing white data streams against a pure black background. The mood is highly analytical, clean, and futuristic, representing the concept of strategic research and deep insight in a high-end design environment." loop="" muted="" playsinline="" poster="placeholder">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4"/>
+</video>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="text-white-40 font-display-lg text-[24px]">01</span>
+<h3 class="font-headline-lg text-[32px]">Strategy</h3>
+</div>
+<p class="text-white-80 font-body-md text-[18px]">Research &amp; Insight to anchor your brand in purpose.</p>
+<button class="flex items-center gap-2 text-white uppercase tracking-widest text-[12px] group-hover:gap-4 transition-all">
+                            Learn Strategy <span class="material-symbols-outlined text-[18px]">arrow_right_alt</span>
+</button>
+</div>
+</div>
+<!-- Service 2 -->
+<div class="liquid-glass rounded-[2.5rem] p-10 flex flex-col gap-8 reveal-on-scroll group" style="transition-delay: 0.1s;">
+<div class="aspect-square rounded-3xl overflow-hidden relative">
+<video autoplay="" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="Close-up artistic macro shot of metallic fibers weaving together in a rhythmic, sophisticated pattern. The lighting is dramatic, highlighting the silver and platinum tones against deep shadows, symbolizing craftsmanship, design execution, and meticulous attention to detail." loop="" muted="" playsinline="" poster="placeholder">
+<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4" type="video/mp4"/>
+</video>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="text-white-40 font-display-lg text-[24px]">02</span>
+<h3 class="font-headline-lg text-[32px]">Craft</h3>
+</div>
+<p class="text-white-80 font-body-md text-[18px]">Design &amp; Execution that commands attention.</p>
+<button class="flex items-center gap-2 text-white uppercase tracking-widest text-[12px] group-hover:gap-4 transition-all">
+                            Learn Craft <span class="material-symbols-outlined text-[18px]">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="py-20 px-gutter border-t border-white/5 bg-black">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-stack-lg">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">public</span>
+<span class="font-headline-lg text-headline-lg font-extrabold tracking-tighter text-on-surface">ASME</span>
+</div>
+<p class="text-white-40 font-label-sm text-[12px] tracking-[0.2em]">© 2024 ASME COLLECTIVE. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-12 text-white-40 font-label-sm uppercase tracking-widest text-[11px]">
+<a class="hover:text-white transition-colors" href="#">Privacy</a>
+<a class="hover:text-white transition-colors" href="#">Terms</a>
+<a class="hover:text-white transition-colors" href="#">Instagram</a>
+<a class="hover:text-white transition-colors" href="#">Twitter</a>
+</div>
+</div>
+</footer>
+<script>
+        // Hero Video Logic: 500ms opacity crossfade to black between plays
+        const heroVideo = document.getElementById('heroVideo');
+        
+        heroVideo.addEventListener('ended', () => {
+            heroVideo.style.opacity = '0';
+            setTimeout(() => {
+                heroVideo.currentTime = 0;
+                heroVideo.play();
+                heroVideo.style.opacity = '1';
+            }, 500);
+        });
+
+        // Intersection Observer for Reveal Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-pull-up');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+            el.style.opacity = '0'; // Initial state
+            revealObserver.observe(el);
+        });
+
+        // Micro-interactions for liquid-glass buttons
+        document.querySelectorAll('.liquid-glass').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

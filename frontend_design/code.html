@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PRISMA AI | Intelligent RAG Ecosystem</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Instrument+Serif:ital@0;1&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "surface-variant": "#353628",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#e5e2e1",
+                "surface-dim": "#131409",
+                "primary": "#fbf7e4",
+                "inverse-primary": "#605f50",
+                "surface-tint": "#cac7b5",
+                "surface-container-low": "#1b1c10",
+                "primary-fixed": "#e6e3d0",
+                "secondary-fixed-dim": "#c8c6c5",
+                "surface-container-high": "#2a2b1e",
+                "on-secondary-container": "#bab8b7",
+                "tertiary": "#f9f6f6",
+                "surface-container-highest": "#353628",
+                "on-tertiary": "#303030",
+                "on-surface": "#e5e3cf",
+                "background": "#000000",
+                "on-primary-container": "#616051",
+                "on-secondary": "#313030",
+                "primary-fixed-dim": "#cac7b5",
+                "primary-container": "#dedbc8",
+                "on-primary-fixed-variant": "#484739",
+                "surface": "#131409",
+                "on-surface-variant": "#c9c6bc",
+                "on-primary": "#323124",
+                "on-error-container": "#ffdad6",
+                "on-background": "#e5e3cf",
+                "on-primary-fixed": "#1c1c10",
+                "on-error": "#690005",
+                "inverse-on-surface": "#303124",
+                "on-tertiary-container": "#605f5f",
+                "error": "#ffb4ab",
+                "surface-bright": "#393a2c",
+                "on-tertiary-fixed": "#1b1c1c",
+                "secondary": "#c8c6c5",
+                "secondary-fixed": "#e5e2e1",
+                "on-secondary-fixed": "#1c1b1b",
+                "on-secondary-fixed-variant": "#474646",
+                "surface-container-lowest": "#0e0f05",
+                "inverse-surface": "#e5e3cf",
+                "outline-variant": "#48473f",
+                "tertiary-container": "#dcdad9",
+                "outline": "#939187",
+                "on-tertiary-fixed-variant": "#474746",
+                "tertiary-fixed-dim": "#c8c6c5",
+                "secondary-container": "#4a4949",
+                "surface-container": "#1f2014"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem",
+                "2xl": "1.5rem"
+              },
+              "spacing": {
+                "stack-lg": "4rem",
+                "stack-sm": "0.5rem",
+                "container-max": "1440px",
+                "hero-inset": "4rem",
+                "stack-md": "1.5rem",
+                "section-padding": "8rem",
+                "gutter": "2rem"
+              },
+              "fontFamily": {
+                "headline-md": ["Almarai"],
+                "accent-italic": ["Instrument Serif"],
+                "headline-lg": ["Almarai"],
+                "body-md": ["Almarai"],
+                "display-lg-mobile": ["Almarai"],
+                "body-lg": ["Almarai"],
+                "label-sm": ["Almarai"],
+                "display-lg": ["Almarai"]
+              },
+              "fontSize": {
+                "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                "accent-italic": ["1.1em", {"fontWeight": "400"}],
+                "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>body {
+    background-color: #000;
+    color: #E1E0CC
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+/* Noise Overlay */
+.noise-overlay::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBGVWsZbq8-SfxWdcymZicYgBC5YNN-v6zDwuSTWjzRIzPDVW7b21Zw7H8PGxk18ydlsBssU1ADVqYOw-4Ye0rSsAXvl29OpGftuqtmUwwyXN5YVRSy-EDxeCfFFgi5voJWO8lSCyAnyWCl4UAfCPpoZZ1JsCpB5oRi9ieMyqmBfmOUklY4yu78cmD6G6JwVbDYJ7U61lWUfKrs7DP5HesYjVWPd5hoKBnUP7JtHcP4GY6B4w-Zid-WDPDyRKEPi808UNYdAAhRGbXi);
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 9999
+    }
+/* Cinematic Animations */
+@keyframes wordsPullUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+        } to {
+        transform: translateY(0);
+        opacity: 1;
+        }
+    }
+.animate-pull-up {
+    animation: wordsPullUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards
+    }
+.reveal-line {
+    width: 0;
+    height: 1px;
+    background-color: #DEDBC8;
+    margin: 1.5rem auto;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1)
+    }
+.reveal-line.active {
+    width: 100%
+    }
+.glass-card {
+    background: rgba(16, 16, 16, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(222, 219, 200, 0.1)
+    }
+.scroll-reveal {
+    opacity: 0;
+    transform: translatey(20px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1)
+    }
+.scroll-reveal.visible {
+    opacity: 1;
+    transform: translatey(0)
+    }
+::-webkit-scrollbar {
+    width: 4px
+    }
+::-webkit-scrollbar-track {
+    background: #000
+    }
+::-webkit-scrollbar-thumb {
+    background: #353628;
+    border-radius: 2px
+    }</style>
+</head>
+<body class="font-body-md noise-overlay overflow-x-hidden">
+<!-- Top Navigation Bar (Floating Pill) -->
+<nav class="fixed top-8 left-1/2 -translate-x-1/2 w-fit px-8 py-4 rounded-full border border-outline-variant/10 bg-background/80 backdrop-blur-2xl flex items-center gap-stack-md z-50">
+<div class="font-headline-md text-headline-md font-extrabold tracking-tighter text-primary mr-8">PRISMA AI</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-body-md uppercase tracking-widest text-primary font-bold border-b border-primary/40 pb-1" href="#">Platform</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Capabilities</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Dashboard</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Documentation</a>
+<a class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Contact</a>
+</div>
+<button class="ml-8 px-6 py-2 bg-primary-container text-on-primary rounded-full font-label-sm uppercase tracking-widest hover:scale-105 transition-transform duration-500">Connect</button>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-hero-inset">
+<div class="relative w-full max-w-7xl mx-auto border border-outline-variant/10 rounded-2xl overflow-hidden bg-[#101010]">
+<div class="absolute inset-0 z-0 overflow-hidden">
+<img class="w-full h-full object-cover opacity-40" data-alt="A cinematic, high-contrast overhead shot of deep dark water with ripples, softly lit by a cool moonlight, creating a mysterious and professional atmosphere. The water texture is smooth and dark, with subtle high-key reflections. This aesthetic aligns with a high-end AI brand, using blacks and creams to evoke prestige and intelligence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU4j-WP4m9kb5Hh7-c44v9W_Q6sdMRxB1G4V4S4rqPKvOSuMHE-w89wlY4E5jv9gKdnLwEzndbqflyOqfUDT-c17jVMQ6Z1LjJfdBOqgdgGPtdi2b6LQ2NujpyzRb8k2fGVMFt3NVn0e4EFddVrlLIgC-BBOeZWNFLo780izzMfKgPBjv9T_85cuCL6IShRKif7Ttu-Qhzyuj2LEdf9lNAPqPV1Iun8PWZgs7CUdWbDrjhQQD4er-rorhRY8sN59PHzHK2--3qFkB6"/>
+</div>
+<div class="relative z-10 p-16 md:p-24 flex flex-col items-center text-center">
+<div class="overflow-hidden mb-4">
+<h1 class="font-display-lg text-display-lg text-primary animate-pull-up" style="animation-delay: 0.1s;">Prisma*</h1>
+</div>
+<div class="overflow-hidden mb-8">
+<p class="font-headline-md text-headline-md text-on-surface-variant animate-pull-up" style="animation-delay: 0.3s;">Transform documents into conversations.</p>
+</div>
+<div class="max-w-2xl overflow-hidden mb-12">
+<p class="font-body-lg text-body-lg text-on-surface/70 animate-pull-up" style="animation-delay: 0.5s;">
+                        An advanced AI knowledge platform powered by RAG technology. Build context-aware intelligent systems that turn your organizational knowledge into instant, verifiable answers.
+                    </p>
+</div>
+<button class="px-10 py-5 bg-primary text-black font-label-sm uppercase tracking-[0.2em] rounded-sm hover:bg-on-surface transition-colors duration-500 animate-pull-up" style="animation-delay: 0.7s;">
+                    Start Building
+                </button>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-section-padding px-gutter bg-background">
+<div class="max-w-4xl mx-auto text-center">
+<span class="font-label-sm text-primary uppercase tracking-[0.3em] mb-12 block scroll-reveal">AI Knowledge Platform</span>
+<div class="reveal-line mb-12" id="about-line"></div>
+<h2 class="font-display-lg text-display-lg leading-tight scroll-reveal">
+                We built Prisma AI, <br/>
+<span class="font-accent-italic italic text-primary">an intelligent RAG ecosystem.</span><br/>
+                It empowers teams to retrieve, understand, and interact with organizational knowledge instantly.
+            </h2>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-section-padding px-hero-inset bg-background">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-7xl mx-auto h-[600px]">
+<!-- Card 1: Video/Visual -->
+<div class="md:col-span-2 relative group overflow-hidden rounded-2xl bg-[#212121] border border-outline-variant/10 scroll-reveal">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" data-alt="A macro cinematic visualization of abstract light particles moving in slow motion, forming a glowing neural network. The lighting is low-key with high-contrast highlights in warm cream. The mood is sophisticated and futuristic, suggesting a high-end conversational AI interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApb0tyE0VHb015vbRKdvaT-2DWRmjqKu-nYm2SWl-EhW-GbYbpAhoqgffKu3q48iLAMaY2ef83wFXv7DgiuGkk8e8bkbGRu-CrQQCQ4c8ggRoWSnJTHkvaOZRoIYBt06A81xfQFTZ4PkdAfekA94gQclGElE4dUtd-Sw6c7Iyd5qJmrHZZyNUlxRdn89DfI1CJLVe8fcMJtC3_SIlrC74HTiE7YEUboDiYi2lnQhrvN7OsuF5_CK-UkIpuMa3MHwgWa3oENYrByf2e"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-8 left-8">
+<p class="font-headline-md text-primary">Chat with your knowledge.</p>
+</div>
+</div>
+<!-- Card 2: Document Intelligence -->
+<div class="bg-[#212121] p-8 rounded-2xl border border-outline-variant/10 flex flex-col justify-between scroll-reveal" style="transition-delay: 0.1s;">
+<span class="font-label-sm text-primary/40">01</span>
+<div>
+<h3 class="font-headline-md text-primary mb-4">Document Intelligence.</h3>
+<p class="font-body-md text-on-surface-variant">Seamless uploads, semantic chunking, indexing, and high-performance vector storage.</p>
+</div>
+</div>
+<!-- Card 3: Conversational AI -->
+<div class="bg-[#212121] p-8 rounded-2xl border border-outline-variant/10 flex flex-col justify-between scroll-reveal" style="transition-delay: 0.2s;">
+<span class="font-label-sm text-primary/40">02</span>
+<div>
+<h3 class="font-headline-md text-primary mb-4">Conversational AI.</h3>
+<p class="font-body-md text-on-surface-variant">Real-time streaming, advanced retrieval pipelines, and citations powered by Gemini.</p>
+</div>
+</div>
+<!-- Card 4: Knowledge Management -->
+<div class="md:col-span-4 bg-[#101010] p-12 rounded-2xl border border-outline-variant/10 flex flex-col md:flex-row items-center gap-12 scroll-reveal" style="transition-delay: 0.3s;">
+<div class="flex-1">
+<span class="font-label-sm text-primary/40">03</span>
+<h3 class="font-headline-md text-primary mt-4 mb-6">Knowledge Management.</h3>
+<p class="font-body-lg text-on-surface-variant">Centralized hub for all your data. Drag-and-drop ingestion, real-time sync, and intelligent monitoring tools for every document in your library.</p>
+</div>
+<div class="flex-1 w-full flex justify-center items-center">
+<div class="w-full max-w-sm aspect-video glass-card rounded-xl p-6 flex flex-col justify-center items-center gap-4 border-dashed border-primary/20">
+<span class="material-symbols-outlined text-4xl text-primary">cloud_upload</span>
+<p class="font-label-sm text-primary uppercase tracking-widest">Ingest New Data</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Dashboard Preview Section -->
+<section class="py-section-padding px-hero-inset bg-background">
+<div class="max-w-7xl mx-auto">
+<h2 class="font-display-lg text-display-lg text-center mb-24 scroll-reveal">Ecosystem Interface</h2>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Panel 1: AI Workspace -->
+<div class="glass-card rounded-2xl p-8 flex flex-col h-[500px] scroll-reveal" style="transition-delay: 0.1s;">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_#DEDBC8]"></span>
+<span class="font-label-sm text-primary uppercase tracking-widest">Workspace active</span>
+</div>
+<div class="flex-1 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
+<div class="self-end bg-primary/10 border border-primary/20 p-4 rounded-xl rounded-tr-none max-w-[80%]">
+<p class="text-sm">Summarize our Q3 compliance reports.</p>
+</div>
+<div class="self-start glass-card p-4 rounded-xl rounded-tl-none max-w-[90%]">
+<p class="text-sm mb-3">Analysis complete. The Q3 reports highlight a 12% improvement in operational efficiency...</p>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-surface-variant/40 rounded text-[10px] text-primary/60 border border-primary/10 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">description</span> report_v2.pdf
+                                </span>
+<span class="px-2 py-1 bg-surface-variant/40 rounded text-[10px] text-primary/60 border border-primary/10 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">description</span> legal_audit.doc
+                                </span>
+</div>
+</div>
+</div>
+<div class="mt-6 p-4 border border-outline-variant/20 rounded-xl flex items-center gap-3">
+<span class="text-on-surface-variant text-sm">Ask anything...</span>
+<span class="material-symbols-outlined ml-auto text-primary opacity-40">send</span>
+</div>
+</div>
+<!-- Panel 2: Upload Portal -->
+<div class="bg-[#101010] border border-outline-variant/10 rounded-2xl p-8 flex flex-col justify-center items-center scroll-reveal" style="transition-delay: 0.2s;">
+<div class="w-full aspect-square border-2 border-dashed border-outline-variant/30 rounded-2xl flex flex-col items-center justify-center p-8 group hover:border-primary/40 transition-colors duration-500">
+<span class="material-symbols-outlined text-6xl text-on-surface-variant mb-6 group-hover:text-primary transition-colors duration-500">upload_file</span>
+<p class="font-headline-md text-primary mb-2 text-center">Ready for Ingestion</p>
+<p class="font-body-md text-on-surface-variant text-center mb-8">Drop PDF, DOCX, or TXT</p>
+<div class="w-full space-y-4">
+<div class="flex items-center gap-3 p-3 glass-card rounded-lg border border-primary/10">
+<span class="material-symbols-outlined text-primary">description</span>
+<div class="flex-1">
+<div class="flex justify-between text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+<span>Strategy_Deck.pdf</span>
+<span>85%</span>
+</div>
+<div class="h-1 bg-surface-variant/40 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel 3: Document Manager -->
+<div class="bg-[#212121] border border-outline-variant/10 rounded-2xl p-8 scroll-reveal" style="transition-delay: 0.3s;">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-label-sm text-primary uppercase tracking-widest">Library (24)</h3>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">filter_list</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-4 p-4 hover:bg-primary/5 rounded-xl transition-colors group cursor-pointer border border-transparent hover:border-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">folder_shared</span>
+<div class="flex-1">
+<p class="text-sm font-bold">Project Orion Labs</p>
+<p class="text-[10px] text-on-surface-variant">Modified 2h ago • 1.2GB</p>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary border border-primary/20">Synced</span>
+</div>
+<div class="flex items-center gap-4 p-4 hover:bg-primary/5 rounded-xl transition-colors group cursor-pointer border border-transparent hover:border-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">article</span>
+<div class="flex-1">
+<p class="text-sm font-bold">API Documentation</p>
+<p class="text-[10px] text-on-surface-variant">Modified 5h ago • 450KB</p>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary border border-primary/20">Synced</span>
+</div>
+<div class="flex items-center gap-4 p-4 hover:bg-primary/5 rounded-xl transition-colors group cursor-pointer border border-transparent hover:border-primary/10">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">insert_chart</span>
+<div class="flex-1">
+<p class="text-sm font-bold">Market Analysis Q2</p>
+<p class="text-[10px] text-on-surface-variant">Modified Yesterday • 8.4MB</p>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-secondary/10 text-secondary border border-secondary/20">Processing</span>
+</div>
+</div>
+<button class="w-full mt-8 py-3 border border-outline-variant/30 rounded-xl font-label-sm uppercase tracking-widest text-on-surface-variant hover:text-primary hover:border-primary/40 transition-all">View All Files</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-background py-stack-lg border-t border-outline-variant/10">
+<div class="max-w-7xl mx-auto px-gutter flex flex-col md:flex-row justify-between items-center">
+<div class="font-headline-lg text-headline-lg text-primary mb-8 md:mb-0">PRISMA</div>
+<div class="flex flex-col items-center md:items-end gap-6">
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Terms</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-secondary-container hover:text-primary transition-opacity duration-300" href="#">Instagram</a>
+</div>
+<p class="font-label-sm text-label-sm tracking-widest text-on-secondary-container opacity-50">© 2024 PRISMA CREATIVE STUDIO. ALL RIGHTS RESERVED.</p>
+</div>
+</div>
+</footer>
+<script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Activate line reveal if it's the about line
+                    if (entry.target.id === 'about-line' || entry.target.contains(document.getElementById('about-line'))) {
+                        document.getElementById('about-line').classList.add('active');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal, #about-line').forEach(el => observer.observe(el));
+
+        // Parallax Effect for Hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroImage = document.querySelector('.hero-inset img');
+            if (heroImage) {
+                heroImage.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+
+        // Hover scale interaction
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.95)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1.05)';
+            });
+        });
+    </script>
+</body></html>
