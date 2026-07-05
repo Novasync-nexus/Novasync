@@ -6,9 +6,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "supersecretkey12345"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    CHROMA_DB_DIR: str = "../chroma_db"
     UPLOADS_DIR: str = "../uploads"
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/rag_db"
+    PINECONE_API_KEY: str = ""
+    PINECONE_INDEX_NAME: str = "nexus-docs"
 
     class Config:
         env_file = ".env"
