@@ -29,7 +29,7 @@ A full-stack Retrieval-Augmented Generation (RAG) application utilizing Google's
 Ensure you have a `.env` file in the root directory:
 ```
 GEMINI_API_KEY=your_gemini_api_key
-SECRET_KEY=supersecretkey12345
+SECRET_KEY=your_super_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 CHROMA_DB_DIR=../chroma_db
