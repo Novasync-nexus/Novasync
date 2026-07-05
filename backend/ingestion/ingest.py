@@ -68,13 +68,9 @@ def ingest_documents(user_id: int = None):
 
     current_file_names = set(os.path.basename(f) for f in current_files)
 
-    # 1. Delete vectors for removed files
-    files_to_delete = indexed_files - current_file_names
-    for file_to_del in files_to_delete:
-        print(f"Deleting removed file vectors: {file_to_del}")
-        ids_to_del = [v["id"] for v in existing_vectors if v.get("metadata", {}).get("source_file") == file_to_del]
-        if ids_to_del:
-            index.delete(ids=ids_to_del)
+    # Note: We no longer delete vectors based on missing files in the uploads dir.
+    # Ephemeral hosts (like Koyeb) will clear the uploads dir on restart.
+    # Deletion is now handled explicitly by the DELETE /documents endpoint.
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000, chunk_overlap=200, length_function=len, is_separator_regex=False
@@ -121,7 +117,14 @@ def ingest_documents(user_id: int = None):
     if batch:
         index.upsert(vectors=batch)
 
-    print(f"Ingestion complete. Added {new_chunks_count} new chunks.")
+    # Clean up the raw files to save disk space and prevent re-processing
+    for file_path in current_files:
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print(f"Warning: Could not delete raw file {file_path}: {e}")
+
+    print(f"Ingestion complete. Added {new_chunks_count} new chunks. Cleaned up raw files.")
 
 if __name__ == "__main__":
     ingest_documents()
