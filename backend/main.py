@@ -23,7 +23,7 @@ async def startup():
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -33,8 +33,9 @@ app.add_middleware(
 async def health_check(request: Request):
     return {"status": "healthy", "version": "1.0.0"}
 
-from backend.api import chat, upload, documents, auth
+from backend.api import chat, upload, documents, auth, chat_sessions
 app.include_router(auth.router)
+app.include_router(chat_sessions.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
 app.include_router(documents.router)

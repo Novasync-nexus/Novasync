@@ -114,12 +114,30 @@ const GlobalStyle = () => (
 
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin { animation: spin 1s linear infinite; }
+
+    /* Responsive Styles */
+    .nav-links { display: flex; gap: 2rem; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .about-section { padding: 8rem 2rem; }
+    .dashboard-section { padding: 8rem 2rem; }
+    .hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); height: 560px; }
+
+    @media (max-width: 900px) {
+      .hub-grid { grid-template-columns: 1fr; height: auto; gap: 2rem !important; }
+      .hub-grid > div { min-height: 400px; }
+      header { top: 1rem !important; width: 95% !important; }
+      .nav-links { display: none; }
+      .about-section, .dashboard-section { padding: 4rem 1.5rem; }
+    }
   `}</style>
 );
 
 export default function App() {
   const [documents, setDocuments]   = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
+  const [savedSessions, setSavedSessions] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState(Date.now());
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [editSessionName, setEditSessionName] = useState('');
   const [input, setInput]           = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isTyping, setIsTyping]     = useState(false);
@@ -132,7 +150,13 @@ export default function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
+
+  const [user, setUser] = useState(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [editUsernameInput, setEditUsernameInput] = useState('');
 
   /* Scroll-reveal */
   useEffect(() => {
@@ -141,16 +165,27 @@ export default function App() {
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal-on-scroll').forEach(el => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [token]);
+
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` }});
+      setUser(res.data);
+    } catch (e) { console.error(e); }
+  };
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
       fetchDocuments();
+      fetchUser();
+      fetchSessions();
     } else {
       localStorage.removeItem('token');
       setDocuments([]);
       setChatHistory([]);
+      setSavedSessions([]);
+      setUser(null);
     }
   }, [token]);
 
@@ -166,7 +201,7 @@ export default function App() {
         setToken(res.data.access_token);
         setAuthModalOpen(false);
       } else {
-        await axios.post(`${API_BASE}/auth/register`, { email: authEmail, password: authPassword });
+        await axios.post(`${API_BASE}/auth/register`, { email: authEmail, password: authPassword, username: authName });
         setIsLogin(true);
         setAuthError('Registration successful. Please login.');
       }
@@ -181,6 +216,53 @@ export default function App() {
   useEffect(() => {
     if (chatHistory.length > 0) endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
+
+  const fetchSessions = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/sessions`, { headers: { Authorization: `Bearer ${token}` }});
+      setSavedSessions(res.data);
+      if (res.data.length > 0) {
+        setActiveSessionId(res.data[0].id);
+        setChatHistory(res.data[0].messages);
+      } else {
+        setActiveSessionId(Date.now());
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  const handleNewChat = async () => {
+    try {
+      const res = await axios.post(`${API_BASE}/sessions`, { name: 'New Chat' }, { headers: { Authorization: `Bearer ${token}` }});
+      setSavedSessions(prev => [res.data, ...prev]);
+      setActiveSessionId(res.data.id);
+      setChatHistory([]);
+    } catch (e) { console.error(e); }
+  };
+
+  const switchSession = (session) => {
+    setChatHistory(session.messages);
+    setActiveSessionId(session.id);
+  };
+
+  const saveSessionEdit = async (id) => {
+    try {
+      await axios.put(`${API_BASE}/sessions/${id}`, { name: editSessionName }, { headers: { Authorization: `Bearer ${token}` }});
+      setSavedSessions(prev => prev.map(s => s.id === id ? { ...s, name: editSessionName } : s));
+      setEditingSessionId(null);
+    } catch(e) { console.error(e); }
+  };
+
+  const saveUsernameEdit = async () => {
+    if (!editUsernameInput.trim()) {
+      setIsEditingUsername(false);
+      return;
+    }
+    try {
+      const res = await axios.put(`${API_BASE}/auth/me`, { username: editUsernameInput }, { headers: { Authorization: `Bearer ${token}` }});
+      setUser(res.data);
+      setIsEditingUsername(false);
+    } catch(e) { console.error(e); }
+  };
 
   const fetchDocuments = async () => {
     if (!token) return;
@@ -199,7 +281,7 @@ export default function App() {
         try { await axios.post(`${API_BASE}/upload`, fd, { headers: { Authorization: `Bearer ${token}` }}); } catch (e) { console.error(e); }
       }
       setIsUploading(false);
-      setTimeout(fetchDocuments, 2000);
+      fetchDocuments();
     }
   });
 
@@ -209,10 +291,24 @@ export default function App() {
 
   const handleSend = async () => {
     if (!input.trim() || !token) return;
+    
+    let currentSessionId = activeSessionId;
+    if (!savedSessions.find(s => s.id === currentSessionId)) {
+        const res = await axios.post(`${API_BASE}/sessions`, { name: input.slice(0, 30) || 'New Chat' }, { headers: { Authorization: `Bearer ${token}` }});
+        currentSessionId = res.data.id;
+        setActiveSessionId(currentSessionId);
+        setSavedSessions(prev => [res.data, ...prev]);
+    }
+
     const userMsg = { role: 'user', content: input };
     setChatHistory(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
+
+    try {
+      await axios.post(`${API_BASE}/sessions/${currentSessionId}/messages`, userMsg, { headers: { Authorization: `Bearer ${token}` }});
+    } catch(e) { console.error("Failed to save user message", e); }
+
     try {
       const res = await fetch(`${API_BASE}/chat`, {
         method: 'POST',
@@ -240,6 +336,11 @@ export default function App() {
           } catch (_) {}
         }
       }
+      
+      try {
+        await axios.post(`${API_BASE}/sessions/${currentSessionId}/messages`, bot, { headers: { Authorization: `Bearer ${token}` }});
+      } catch(e) { console.error("Failed to save bot message", e); }
+
     } catch (e) {
       setChatHistory(prev => [...prev, { role: 'bot', content: 'An error occurred.' }]);
     } finally { setIsTyping(false); }
@@ -249,72 +350,129 @@ export default function App() {
     <>
       <GlobalStyle />
 
+      {/* Profile Modal */}
+      {profileModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', padding: '1rem' }}>
+          <div className="liquid-glass fade-in-up" style={{ width: '100%', maxWidth: '440px', borderRadius: '1.5rem', padding: '2.5rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
+            <button onClick={() => setProfileModalOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '9999px', width: '2rem', height: '2rem', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>close</span>
+            </button>
+            <span className="material-symbols-outlined" style={{ fontSize: '4rem', color: '#dedbc8', marginBottom: '1rem' }}>account_circle</span>
+            <h2 style={{ fontFamily: "'Instrument Serif', serif", fontSize: '2.5rem', color: '#fff', marginBottom: '0.5rem' }}>My Profile</h2>
+            <div className="reveal-line"></div>
+            
+            <div style={{ width: '100%', marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)' }}>Name</span>
+                {isEditingUsername ? (
+                  <input
+                    type="text"
+                    value={editUsernameInput}
+                    onChange={e => setEditUsernameInput(e.target.value)}
+                    onBlur={saveUsernameEdit}
+                    onKeyDown={e => e.key === 'Enter' && saveUsernameEdit()}
+                    autoFocus
+                    style={{ background: 'transparent', border: 'none', borderBottom: '1px solid #fff', color: '#fff', fontSize: '0.9rem', outline: 'none', textAlign: 'right', width: '150px' }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>{user?.username || '—'}</span>
+                    <button onClick={() => { setEditUsernameInput(user?.username || ''); setIsEditingUsername(true); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '0.9rem' }}>edit</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)' }}>Email</span>
+                <span style={{ fontSize: '0.9rem', color: '#fff' }}>{user?.email || 'Loading...'}</span>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)' }}>Status</span>
+                <span style={{ fontSize: '0.9rem', color: '#90ee90' }}>Active</span>
+              </div>
+            </div>
+            
+            <button onClick={() => { setProfileModalOpen(false); logout(); }} style={{ width: '100%', marginTop: '2rem', padding: '1rem', borderRadius: '9999px', background: 'rgba(255,100,100,0.1)', color: '#ffb4ab', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, cursor: 'pointer', border: '1px solid rgba(255,100,100,0.3)', transition: 'all 0.3s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,100,100,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,100,100,0.1)'}>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Auth Modal */}
       {authModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)' }}>
-          <div className="liquid-glass fade-in-up" style={{ width: '90%', maxWidth: '440px', borderRadius: '1.5rem', padding: '3.5rem 2.5rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button onClick={() => setAuthModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.5 }}>
-              <span className="material-symbols-outlined">close</span>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', padding: '1rem', overflowY: 'auto' }}>
+          <div className="liquid-glass fade-in-up" style={{ width: '100%', maxWidth: '440px', borderRadius: '1.5rem', padding: '2.5rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto', maxHeight: '95vh', overflowY: 'auto' }}>
+            <button onClick={() => { setAuthModalOpen(false); setAuthError(''); setAuthEmail(''); setAuthPassword(''); setAuthName(''); }} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '9999px', width: '2rem', height: '2rem', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
-            
-            <div style={{ width: '100%', textAlign: 'center', marginBottom: '2.5rem' }}>
-              <h2 className="prisma-reveal" style={{ fontFamily: "'Instrument Serif', serif", fontSize: '3rem', fontStyle: 'italic', color: '#fff', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
+
+            <div style={{ width: '100%', textAlign: 'center', marginBottom: '1.75rem', paddingTop: '0.5rem' }}>
+              <h2 style={{ fontFamily: "'Instrument Serif', serif", fontSize: 'clamp(2rem, 6vw, 2.75rem)', fontStyle: 'italic', color: '#fff', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
                 {isLogin ? 'Welcome Back' : 'Join the Collective'}
               </h2>
               <div className="reveal-line"></div>
               {!isLogin && (
-                <p className="fade-in-up" style={{ animationDelay: '0.2s', fontSize: '1rem', color: 'rgba(255,255,255,0.6)', marginTop: '1rem' }}>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.75rem' }}>
                   Entry into the NOVASYNC creative ecosystem.
                 </p>
               )}
             </div>
 
-            {authError && <p className="fade-in-up" style={{ color: '#ffb4ab', fontSize: '0.85rem', textAlign: 'center', marginBottom: '1.5rem' }}>{authError}</p>}
-            
-            <form onSubmit={handleAuth} className="fade-in-up" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem', animationDelay: '0.4s' }}>
-              
+            {authError && (
+              <div style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: authError.includes('successful') ? 'rgba(100,200,100,0.1)' : 'rgba(255,100,100,0.1)', border: `1px solid ${authError.includes('successful') ? 'rgba(100,200,100,0.3)' : 'rgba(255,100,100,0.3)'}`, marginBottom: '1.25rem', textAlign: 'center' }}>
+                <p style={{ color: authError.includes('successful') ? '#90ee90' : '#ffb4ab', fontSize: '0.82rem', margin: 0 }}>{authError}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleAuth} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+
               {!isLogin && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 700, marginLeft: '0.25rem' }}>Full Name</label>
-                  <input className="liquid-input" type="text" placeholder="ALEXANDER VANCE" style={{ width: '100%', padding: '1rem 1.5rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1rem', fontFamily: 'Almarai, sans-serif' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginLeft: '0.25rem' }}>Full Name <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.6rem' }}>(optional)</span></label>
+                  <input className="liquid-input" type="text" value={authName} onChange={e => setAuthName(e.target.value)} placeholder="Alexander Vance" style={{ width: '100%', padding: '0.85rem 1.25rem', borderRadius: '0.5rem', color: '#fff', fontSize: '0.95rem', fontFamily: 'Almarai, sans-serif' }} />
                 </div>
               )}
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 700, marginLeft: '0.25rem' }}>Email Address</label>
-                <input className="liquid-input" type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder={isLogin ? "name@studio.com" : "CONNECT@STUDIO.COM"} style={{ width: '100%', padding: '1rem 1.5rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1rem', fontFamily: 'Almarai, sans-serif' }} />
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginLeft: '0.25rem' }}>Email Address</label>
+                <input className="liquid-input" type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder={isLogin ? 'name@studio.com' : 'you@studio.com'} style={{ width: '100%', padding: '0.85rem 1.25rem', borderRadius: '0.5rem', color: '#fff', fontSize: '0.95rem', fontFamily: 'Almarai, sans-serif' }} />
               </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.25rem' }}>
-                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>Password</label>
-                  {isLogin && <a href="#" style={{ fontSize: '0.75rem', color: 'rgba(251,247,228,0.6)', textDecoration: 'none' }}>Forgot Password?</a>}
+                  <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>Password</label>
+                  {isLogin && <a href="#" style={{ fontSize: '0.7rem', color: 'rgba(251,247,228,0.5)', textDecoration: 'none' }}>Forgot?</a>}
                 </div>
-                <input className="liquid-input" type="password" required value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '1rem 1.5rem', borderRadius: '0.5rem', color: '#fff', fontSize: '1rem', fontFamily: 'Almarai, sans-serif' }} />
+                <input className="liquid-input" type="password" required value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '0.85rem 1.25rem', borderRadius: '0.5rem', color: '#fff', fontSize: '0.95rem', fontFamily: 'Almarai, sans-serif' }} />
               </div>
-              
-              <div style={{ paddingTop: '1rem' }}>
-                <button type="submit" style={{ width: '100%', padding: '1.25rem', borderRadius: '9999px', background: '#dedbc8', color: '#323124', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.2)' }}
-                  onMouseEnter={e => e.currentTarget.style.transform='scale(1.02)'} onMouseLeave={e => e.currentTarget.style.transform='scale(1)'} onMouseDown={e => e.currentTarget.style.transform='scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform='scale(1.02)'}>
+
+              <div style={{ paddingTop: '0.75rem' }}>
+                <button type="submit" style={{ width: '100%', padding: '1rem', borderRadius: '9999px', background: '#dedbc8', color: '#323124', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, cursor: 'pointer', border: 'none', transition: 'all 0.3s', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.3)' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  onMouseDown={e => e.currentTarget.style.transform = 'scale(0.96)'}
+                  onMouseUp={e => e.currentTarget.style.transform = 'scale(1.02)'}>
                   {isLogin ? 'Sign In' : 'Create Account'}
                 </button>
               </div>
             </form>
-            
-            <div className="fade-in-up" style={{ marginTop: '3rem', width: '100%', textAlign: 'center', animationDelay: '0.6s' }}>
-              <p style={{ fontSize: '1rem', color: '#bab8b7' }}>
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <span onClick={() => { setIsLogin(!isLogin); setAuthError(''); }} style={{ color: '#fbf7e4', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '4px', textDecorationColor: 'rgba(251,247,228,0.3)', marginLeft: '0.5rem' }}>
+
+            <div style={{ marginTop: '1.5rem', width: '100%', textAlign: 'center' }}>
+              <p style={{ fontSize: '0.875rem', color: '#bab8b7' }}>
+                {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+                <span onClick={() => { setIsLogin(!isLogin); setAuthError(''); }}
+                  style={{ color: '#fbf7e4', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '4px', textDecorationColor: 'rgba(251,247,228,0.3)', marginLeft: '0.25rem' }}>
                   {isLogin ? 'Sign Up' : 'Login'}
                 </span>
               </p>
               {!isLogin && (
-                <p style={{ fontSize: '0.75rem', color: 'rgba(201,198,188,0.4)', marginTop: '1rem', lineHeight: 1.6, maxWidth: '280px', margin: '1rem auto 0' }}>
-                  By signing up, you agree to our Terms of Service and Privacy Policy. All artistic assets are protected.
+                <p style={{ fontSize: '0.7rem', color: 'rgba(201,198,188,0.35)', marginTop: '1rem', lineHeight: 1.6 }}>
+                  By creating an account, you agree to our Terms of Service and Privacy Policy.
                 </p>
               )}
             </div>
-            
           </div>
         </div>
       )}
@@ -328,7 +486,7 @@ export default function App() {
             <span style={{ fontWeight: 800, letterSpacing: '-0.04em', fontSize: '1.1rem' }}>NOVASYNC</span>
           </div>
           {/* Links */}
-          <div style={{ display: 'flex', gap: '2rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+          <div className="nav-links">
             <a href="#features" style={{ color: 'inherit', textDecoration: 'none', transition: 'color .2s' }}
                onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.5)'}>Features</a>
             <a href="#dashboard" style={{ color: 'inherit', textDecoration: 'none', transition: 'color .2s' }}
@@ -344,7 +502,12 @@ export default function App() {
                 <button onClick={() => { setIsLogin(true); setAuthModalOpen(true); }} className="liquid-glass" style={{ borderRadius: '9999px', padding: '0.5rem 1.25rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', border: 'none', color: '#fff', cursor: 'pointer' }}>Login</button>
               </>
             ) : (
-              <button onClick={logout} className="liquid-glass" style={{ borderRadius: '9999px', padding: '0.5rem 1.25rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', border: 'none', color: '#fff', cursor: 'pointer' }}>Logout</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                <button onClick={() => setProfileModalOpen(true)} className="liquid-glass" style={{ borderRadius: '9999px', padding: '0.5rem 1.25rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '0.9rem' }}>person</span> Profile
+                </button>
+                <button onClick={logout} style={{ background: 'none', border: 'none', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>Logout</button>
+              </div>
             )}
           </div>
         </nav>
@@ -361,41 +524,45 @@ export default function App() {
         </div>
 
         {/* Hero Content */}
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', maxWidth: '900px', marginTop: '5rem' }}>
-          <h1 className="animate-pull-up" style={{ fontFamily: "'Instrument Serif', serif", fontSize: 'clamp(3.5rem, 10vw, 7rem)', lineHeight: 1.05, letterSpacing: '-0.02em', fontWeight: 400 }}>
-            Know it then <span className="italic-em">*all*</span>
+        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem', maxWidth: '900px', marginTop: '5rem' }}>
+          <div className="animate-pull-up" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '9999px', padding: '0.35rem 1rem', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+            <span style={{ width: '0.4rem', height: '0.4rem', borderRadius: '9999px', background: '#90ee90', boxShadow: '0 0 6px #90ee90', display: 'inline-block' }} />
+            Powered by Nexus
+          </div>
+
+          <h1 className="animate-pull-up" style={{ fontFamily: "'Instrument Serif', serif", fontSize: 'clamp(3.5rem, 10vw, 7rem)', lineHeight: 1.05, letterSpacing: '-0.02em', fontWeight: 400, animationDelay: '0.1s', opacity: 0 }}>
+            Know it then <span className="italic-em">all</span>
           </h1>
 
-          {/* Email pill */}
-          <div className="animate-pull-up liquid-glass" style={{ animationDelay: '0.2s', opacity: 0, width: '100%', maxWidth: '420px', borderRadius: '9999px', display: 'flex', alignItems: 'center', padding: '0.25rem 0.25rem 0.25rem 1.5rem' }}>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              style={{ background: 'transparent', border: 'none', color: '#fff', flex: 1, fontFamily: 'Almarai, sans-serif', fontSize: '0.9rem' }}
-            />
-            <button style={{ background: '#fff', color: '#000', border: 'none', borderRadius: '9999px', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'transform 0.2s' }}
-              onMouseEnter={e=>e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
-              <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>arrow_right_alt</span>
-            </button>
-          </div>
-          <p style={{ fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', animationDelay: '0.25s' }}>Become part of the collective</p>
+          <p className="animate-pull-up" style={{ animationDelay: '0.25s', opacity: 0, fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', color: 'rgba(255,255,255,0.5)', maxWidth: '520px', lineHeight: 1.7 }}>
+            Upload your documents and chat with them in real time — powered by hybrid semantic retrieval and AI.
+          </p>
 
-          {/* CTA */}
-          <div className="animate-pull-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
-            <a href="#dashboard" className="liquid-glass" style={{ borderRadius: '9999px', padding: '1rem 3rem', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', display: 'inline-block', textDecoration: 'none', color: '#fff', transition: 'background 0.2s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.03)'}>
+          {/* CTA Buttons */}
+          <div className="animate-pull-up" style={{ animationDelay: '0.4s', opacity: 0, display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={() => { setIsLogin(false); setAuthModalOpen(true); }}
+              style={{ background: '#dedbc8', color: '#323124', border: 'none', borderRadius: '9999px', padding: '0.9rem 2.5rem', fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 8px 24px -6px rgba(222,219,200,0.3)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 12px 32px -6px rgba(222,219,200,0.5)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 24px -6px rgba(222,219,200,0.3)'; }}>
+              Get Started — Free
+            </button>
+            <a href="#dashboard" className="liquid-glass"
+              style={{ borderRadius: '9999px', padding: '0.9rem 2.5rem', fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', display: 'inline-block', textDecoration: 'none', color: '#fff', transition: 'background 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
               Explore Platform
             </a>
           </div>
+
+          <p className="animate-pull-up" style={{ animationDelay: '0.5s', opacity: 0, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>No credit card required · Setup in seconds</p>
         </div>
 
         {/* Bottom social pills */}
         <div style={{ position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '1rem', zIndex: 10 }}>
           {['share','public','mail'].map(icon => (
             <button key={icon} className="liquid-glass" style={{ width: '3rem', height: '3rem', borderRadius: '9999px', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s' }}
-              onMouseEnter={e=>e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
+              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
               <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>{icon}</span>
             </button>
           ))}
@@ -403,15 +570,15 @@ export default function App() {
       </section>
 
       {/* ── ABOUT ── */}
-      <section id="about" style={{ padding: '8rem 2rem', background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+      <section id="about" className="about-section" style={{ background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <div className="reveal-on-scroll" style={{ maxWidth: '900px' }}>
-          <span style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: '2rem' }}>About Us</span>
-          <h2 style={{ fontFamily: 'Almarai, sans-serif', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, lineHeight: 1.2 }}>
-            Pioneering ideas for minds that{' '}
-            <span className="italic-em" style={{ color: 'rgba(255,255,255,0.8)' }}>create</span>,{' '}
-            <span className="italic-em" style={{ color: 'rgba(255,255,255,0.8)' }}>build</span>, and{' '}
-            <span className="italic-em" style={{ color: 'rgba(255,255,255,0.8)' }}>inspire</span>.
+          <span style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: '1.5rem' }}>About Nexus</span>
+          <h2 style={{ fontFamily: 'Almarai, sans-serif', fontSize: 'clamp(2rem, 4.5vw, 3.25rem)', fontWeight: 300, lineHeight: 1.2, marginBottom: '2rem' }}>
+            Elevating <span className="italic-em" style={{ color: 'rgba(255,255,255,0.8)' }}>Student Wellness</span> through intelligent design.
           </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, fontSize: '1.05rem', maxWidth: '780px', margin: '0 auto' }}>
+            Nexus is our flagship student wellness platform designed to bridge the gap between academic excellence and mental well-being. By integrating powerful AI document analysis with holistic health tracking, we provide an ecosystem where students can effortlessly manage their studies while maintaining a balanced lifestyle.
+          </p>
         </div>
       </section>
 
@@ -421,12 +588,6 @@ export default function App() {
           <video autoPlay muted loop playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}>
             <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_054547_9875cfc5-155a-4229-8ec8-b7ba7125cbf8.mp4" type="video/mp4" />
           </video>
-          <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem' }}>
-            <div className="liquid-glass" style={{ borderRadius: '1.25rem', padding: '1.5rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-              <span style={{ fontFamily: "'Instrument Serif', serif", fontSize: 'clamp(1.2rem, 2.5vw, 2rem)' }}>Our Approach</span>
-              <button className="liquid-glass" style={{ borderRadius: '9999px', padding: '0.75rem 2rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', border: 'none', color: '#fff', cursor: 'pointer' }}>Explore More</button>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -459,7 +620,7 @@ export default function App() {
       </section>
 
       {/* ── DASHBOARD ── */}
-      <section id="dashboard" style={{ padding: '8rem 2rem', background: '#000' }}>
+      <section id="dashboard" className="dashboard-section" style={{ background: '#000' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div className="reveal-on-scroll" style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
@@ -501,24 +662,62 @@ export default function App() {
                 </div>
               </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', height: '560px' }}>
+          <div className="hub-grid" style={{ gap: '1.5rem' }}>
 
             {/* CHAT HISTORY */}
             <div className="liquid-glass reveal-on-scroll" style={{ borderRadius: '2rem', padding: '1.75rem', display: 'flex', flexDirection: 'column', transitionDelay: '0.1s', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem', flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)' }}>history</span>
-                <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Chat History</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)' }}>history</span>
+                  <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Chat History</span>
+                </div>
+                <button onClick={handleNewChat} className="liquid-glass" style={{ border: 'none', background: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '9999px', padding: '0.3rem 0.7rem', fontSize: '0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '0.8rem' }}>add</span> New
+                </button>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', minHeight: 0 }}>
-                <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
-                  <p style={{ fontSize: '0.82rem', color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Current Session</p>
-                  <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', margin: '0.25rem 0 0' }}>Just now</p>
-                </div>
-                {/* Mocked previous history item */}
-                <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.02)'} onMouseLeave={e => e.currentTarget.style.background='transparent'}>
-                  <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Research analysis</p>
-                  <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', margin: '0.25rem 0 0' }}>Yesterday</p>
-                </div>
+                {/* Active Session (if unsaved) */}
+                {!savedSessions.find(s => s.id === activeSessionId) && (
+                  <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+                    <p style={{ fontSize: '0.82rem', color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Current Session</p>
+                    <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', margin: '0.25rem 0 0' }}>{chatHistory.length > 0 ? 'Active now' : 'Just started'}</p>
+                  </div>
+                )}
+                
+                {/* Saved Sessions */}
+                {savedSessions.map(session => (
+                  <div key={session.id} onClick={() => switchSession(session)} style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: session.id === activeSessionId ? 'rgba(255,255,255,0.1)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {editingSessionId === session.id ? (
+                      <input 
+                        type="text" 
+                        value={editSessionName} 
+                        onChange={(e) => setEditSessionName(e.target.value)}
+                        onBlur={() => saveSessionEdit(session.id)}
+                        onKeyDown={(e) => e.key === 'Enter' && saveSessionEdit(session.id)}
+                        autoFocus
+                        style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid #fff', color: '#fff', fontSize: '0.82rem', outline: 'none' }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <>
+                        <div style={{ overflow: 'hidden', flex: 1 }}>
+                          <p style={{ fontSize: '0.82rem', color: session.id === activeSessionId ? '#fff' : 'rgba(255,255,255,0.6)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.name}</p>
+                          <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', margin: '0.25rem 0 0' }}>{session.messages.length} messages</p>
+                        </div>
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            setEditingSessionId(session.id); 
+                            setEditSessionName(session.name); 
+                          }} 
+                          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '0.2rem' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 

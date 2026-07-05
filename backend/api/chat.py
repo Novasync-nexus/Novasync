@@ -45,7 +45,7 @@ async def chat_endpoint(request: ChatRequest, current_user: User = Depends(get_c
 
         def generate():
             # Stream the text chunks
-            for text_chunk in generate_rag_response_stream(request.question, context):
+            for text_chunk in generate_rag_response_stream(request.question, context, current_user.username):
                 yield json.dumps({"type": "chunk", "content": text_chunk}) + "\n"
             
             # Send the sources at the end
