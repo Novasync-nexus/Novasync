@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { useDropzone } from 'react-dropzone';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 /* ─────────────────────────────────────────
    Liquid-glass style injected once
