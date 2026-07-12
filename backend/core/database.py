@@ -9,6 +9,12 @@ if db_url.startswith("postgres://"):
 elif db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+# asyncpg does not support the pgbouncer argument in the URL
+if "?pgbouncer=true" in db_url:
+    db_url = db_url.replace("?pgbouncer=true", "")
+if "&pgbouncer=true" in db_url:
+    db_url = db_url.replace("&pgbouncer=true", "")
+
 engine = create_async_engine(db_url, echo=False)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
