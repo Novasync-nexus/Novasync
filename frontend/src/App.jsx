@@ -722,11 +722,15 @@ export default function App() {
 
         {/* Bottom social pills */}
         <div style={{ position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '1rem', zIndex: 10 }}>
-          {['share','public','mail'].map(icon => (
-            <button key={icon} className="liquid-glass" style={{ width: '3rem', height: '3rem', borderRadius: '9999px', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s' }}
+          {[
+            { icon: 'code', href: 'https://github.com/ThangaPreethi-03/Novasync' },
+            { icon: 'public', href: 'https://github.com/Novasync-nexus' },
+            { icon: 'mail', href: 'mailto:thangapreethi85@gmail.com' }
+          ].map(item => (
+            <a key={item.icon} href={item.href} target="_blank" rel="noopener noreferrer" className="liquid-glass" style={{ width: '3rem', height: '3rem', borderRadius: '9999px', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s', textDecoration: 'none' }}
               onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-              <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>{icon}</span>
-            </button>
+              <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+            </a>
           ))}
         </div>
       </section>
@@ -1002,10 +1006,10 @@ export default function App() {
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>neurology</span>
               <span style={{ fontWeight: 800, letterSpacing: '-0.04em', fontSize: '1.1rem' }}>NOVASYNC</span>
             </div>
-            <p style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>© 2024 NOVASYNC. ALL RIGHTS RESERVED.</p>
+            <p style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>© 2026 NOVASYNC. ALL RIGHTS RESERVED.</p>
           </div>
           <div style={{ display: 'flex', gap: '2.5rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
-            {['Privacy', 'Terms', 'Instagram', 'Twitter'].map(item => (
+            {['Privacy', 'Terms', 'Instagram'].map(item => (
               <a key={item} href="#" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }}
                 onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>{item}</a>
             ))}
