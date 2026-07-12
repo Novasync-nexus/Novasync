@@ -19,6 +19,9 @@ app = FastAPI(title="RAG System API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Import db_models so SQLAlchemy registers the tables before create_all
+from backend.models import db_models
+
 @app.on_event("startup")
 async def startup():
     logger.info("Starting up the application and connecting to the database...")
