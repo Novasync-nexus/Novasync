@@ -15,7 +15,9 @@ if "?pgbouncer=true" in db_url:
 if "&pgbouncer=true" in db_url:
     db_url = db_url.replace("&pgbouncer=true", "")
 
-engine = create_async_engine(db_url, echo=False)
+# Disable statement cache because Supabase pgbouncer (transaction mode)
+# does not support prepared statements.
+engine = create_async_engine(db_url, echo=False, connect_args={"statement_cache_size": 0})
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
