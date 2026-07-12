@@ -5,6 +5,18 @@ import { useDropzone } from 'react-dropzone';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
+// Global axios interceptor for handling 401s
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
 /* ─────────────────────────────────────────
    Liquid-glass style injected once
 ───────────────────────────────────────── */
@@ -123,13 +135,132 @@ const GlobalStyle = () => (
 
     @media (max-width: 900px) {
       .hub-grid { grid-template-columns: 1fr; height: auto; gap: 2rem !important; }
-      .hub-grid > div { min-height: 400px; }
+      .hub-grid > div { height: 500px; min-height: auto; }
       header { top: 1rem !important; width: 95% !important; }
       .nav-links { display: none; }
       .about-section, .dashboard-section { padding: 4rem 1.5rem; }
     }
+
+    /* ── Chat Themes ─────────────────────────────────────────────────── */
+
+    /* Theme: Black */
+    .chat-theme-black { background: #0a0a0a !important; border-radius: 2rem; }
+    .chat-theme-black .chat-msg-user {
+      background: #1a1a1a;
+      border: none;
+      border-radius: 1.25rem !important;
+      color: #ececec;
+    }
+    .chat-theme-black .chat-msg-bot {
+      background: transparent;
+      border: none;
+      border-radius: 0 !important;
+      color: #ececec;
+      padding-left: 0;
+    }
+    .chat-theme-black .chat-input-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #ececec;
+      border-radius: 1rem;
+    }
+    .chat-theme-black .chat-typing {
+      background: transparent;
+      border: none;
+      color: #888;
+    }
+
+    /* Theme: White */
+    .chat-theme-white { background: #ffffff !important; border-radius: 2rem; }
+    .chat-theme-white .chat-msg-user {
+      background: #f4f4f4;
+      border: none;
+      border-radius: 1.25rem !important;
+      color: #1a1a1a;
+    }
+    .chat-theme-white .chat-msg-bot {
+      background: transparent;
+      border: none;
+      border-radius: 0 !important;
+      color: #1a1a1a;
+      padding-left: 0;
+    }
+    .chat-theme-white .chat-input-box {
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+      color: #1a1a1a;
+      border-radius: 1rem;
+    }
+    .chat-theme-white .chat-typing {
+      background: transparent;
+      border: none;
+      color: #888;
+    }
+    .chat-theme-white .chat-header-label { color: #555 !important; }
+    .chat-theme-white .chat-send-btn { color: #333 !important; }
+    .chat-theme-white .chat-send-btn:disabled { color: #bbb !important; }
+    .chat-theme-white .source-chip {
+      background: #f0f0f0 !important;
+      border-color: #ddd !important;
+      color: #555 !important;
+    }
+    .chat-theme-white .chat-empty-icon { color: #aaa !important; }
+
+    /* Theme: Terminal */
+    .chat-theme-terminal { background: #0d0d0d !important; border-radius: 2rem; font-family: 'Courier New', monospace !important; }
+    .chat-theme-terminal .chat-msg-user {
+      background: transparent;
+      border: 1px solid #00ff41;
+      border-radius: 4px !important;
+      color: #00ff41;
+    }
+    .chat-theme-terminal .chat-msg-bot {
+      background: transparent;
+      border: none;
+      border-radius: 0 !important;
+      color: #00e535;
+      padding-left: 0;
+    }
+    .chat-theme-terminal .chat-msg-bot::before { content: '> '; opacity: 0.5; }
+    .chat-theme-terminal .chat-input-box {
+      background: #111;
+      border: 1px solid #00ff41;
+      color: #00ff41;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .chat-theme-terminal .chat-input-box::placeholder { color: #00803e; }
+    .chat-theme-terminal .chat-typing { background: transparent; border: none; color: #00ff41; }
+    .chat-theme-terminal .chat-send-btn { color: #00ff41 !important; }
+    .chat-theme-terminal .source-chip {
+      background: transparent !important;
+      border-color: #00ff41 !important;
+      color: #00ff41 !important;
+      font-family: 'Courier New', monospace;
+    }
+    .chat-theme-terminal .chat-empty-icon { color: #00ff41 !important; opacity: 0.3; }
+
+    /* Theme picker button */
+    .theme-btn {
+      width: 1.4rem; height: 1.4rem; border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .theme-btn:hover { transform: scale(1.15); }
+    .theme-btn.active { border-color: #fff; }
+    .chat-theme-white .theme-btn.active { border-color: #333; }
+    .chat-theme-terminal .theme-btn.active { border-color: #00ff41; }
   `}</style>
 );
+
+// ── Chat theme definitions ──────────────────────────────────────────────
+const CHAT_THEMES = [
+  { id: 'black',     label: 'Black',     color: '#000000' },
+  { id: 'white',     label: 'White',     color: '#f4f4f4' },
+  { id: 'terminal',  label: 'Terminal',  color: '#00ff41' },
+];
 
 export default function App() {
   const [documents, setDocuments]   = useState([]);
@@ -143,6 +274,19 @@ export default function App() {
   const [isTyping, setIsTyping]     = useState(false);
   const [email, setEmail]           = useState('');
   const endRef = useRef(null);
+
+  // Chat theme — persisted across sessions
+  const [chatTheme, setChatTheme] = useState(() => {
+    const saved = localStorage.getItem('chatTheme');
+    if (['black', 'white', 'terminal'].includes(saved)) return saved;
+    // Map old or default
+    if (saved === 'gpt-light') return 'white';
+    return 'black';
+  });
+  const applyTheme = (id) => {
+    setChatTheme(id);
+    localStorage.setItem('chatTheme', id);
+  };
 
   // Auth State
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -171,7 +315,12 @@ export default function App() {
     try {
       const res = await axios.get(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` }});
       setUser(res.data);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      if (e.response && e.response.status === 401) {
+        logout();
+      }
+    }
   };
 
   useEffect(() => {
@@ -315,15 +464,24 @@ export default function App() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ question: input })
       });
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        window.location.reload();
+        return;
+      }
       const reader = res.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let bot = { role: 'bot', content: '', sources: [] };
       setChatHistory(prev => [...prev, bot]);
+      let buffer = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const lines = decoder.decode(value, { stream: true }).split('\n').filter(l => l.trim());
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // Keep the last incomplete line in the buffer
         for (const line of lines) {
+          if (!line.trim()) continue;
           try {
             const data = JSON.parse(line);
             if (data.type === 'chunk') {
@@ -365,15 +523,19 @@ export default function App() {
               <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)' }}>Name</span>
                 {isEditingUsername ? (
-                  <input
-                    type="text"
-                    value={editUsernameInput}
-                    onChange={e => setEditUsernameInput(e.target.value)}
-                    onBlur={saveUsernameEdit}
-                    onKeyDown={e => e.key === 'Enter' && saveUsernameEdit()}
-                    autoFocus
-                    style={{ background: 'transparent', border: 'none', borderBottom: '1px solid #fff', color: '#fff', fontSize: '0.9rem', outline: 'none', textAlign: 'right', width: '150px' }}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="text"
+                      value={editUsernameInput}
+                      onChange={e => setEditUsernameInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && saveUsernameEdit()}
+                      autoFocus
+                      style={{ background: 'transparent', border: 'none', borderBottom: '1px solid #fff', color: '#fff', fontSize: '0.9rem', outline: 'none', textAlign: 'right', width: '130px' }}
+                    />
+                    <button onClick={saveUsernameEdit} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: '4px', cursor: 'pointer', padding: '0.2rem 0.4rem', display: 'flex' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '0.9rem' }}>check</span>
+                    </button>
+                  </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.9rem', color: '#fff' }}>{user?.username || '—'}</span>
@@ -722,34 +884,49 @@ export default function App() {
             </div>
 
             {/* CHAT */}
-            <div className="liquid-glass reveal-on-scroll" style={{ borderRadius: '2rem', padding: '1.75rem', display: 'flex', flexDirection: 'column', transitionDelay: '0.2s', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem', flexShrink: 0 }}>
-                <span style={{ width: '0.6rem', height: '0.6rem', borderRadius: '9999px', background: '#fff', boxShadow: '0 0 8px rgba(255,255,255,0.8)' }} />
-                <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Chat active</span>
+            <div className="reveal-on-scroll" style={{ transitionDelay: '0.2s', display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%' }}>
+              <div className={`liquid-glass chat-theme-${chatTheme}`} style={{ flex: 1, borderRadius: '2rem', padding: '1.75rem', display: 'flex', flexDirection: 'column', minHeight: 0, boxSizing: 'border-box', overflow: 'hidden' }}>
+
+              {/* Header: status indicator + theme picker */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span style={{ width: '0.6rem', height: '0.6rem', borderRadius: '9999px', background: chatTheme === 'terminal' ? '#00ff41' : chatTheme === 'white' ? '#333' : '#fff', boxShadow: chatTheme === 'terminal' ? '0 0 8px #00ff41' : '0 0 8px rgba(255,255,255,0.8)' }} />
+                  <span className="chat-header-label" style={{ fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Chat active</span>
+                </div>
+                {/* Theme swatches */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }} title="Switch chat theme">
+                  {CHAT_THEMES.map(t => (
+                    <button
+                      key={t.id}
+                      className={`theme-btn${chatTheme === t.id ? ' active' : ''}`}
+                      style={{ background: t.color }}
+                      title={t.label}
+                      onClick={() => applyTheme(t.id)}
+                    />
+                  ))}
+                </div>
               </div>
 
+              {/* Messages */}
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem', minHeight: 0 }}>
                 {chatHistory.length === 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.75rem', opacity: 0.4 }}>
+                  <div className="chat-empty-icon" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.75rem', opacity: 0.4 }}>
                     <span className="material-symbols-outlined" style={{ fontSize: '2rem' }}>forum</span>
-                    <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>Ask anything about your documents</p>
+                    <p style={{ fontSize: '0.8rem', textAlign: 'center' }}>Ask anything about your documents</p>
                   </div>
                 ) : chatHistory.map((msg, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                    <div style={{
-                      padding: '0.6rem 0.9rem', borderRadius: '0.75rem', maxWidth: '90%', fontSize: '0.82rem', lineHeight: 1.6, wordBreak: 'break-words',
-                      background: msg.role === 'user' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderTopRightRadius: msg.role === 'user' ? 0 : '0.75rem',
-                      borderTopLeftRadius:  msg.role === 'bot'  ? 0 : '0.75rem',
-                    }}>
+                    <div
+                      className={msg.role === 'user' ? 'chat-msg-user' : 'chat-msg-bot'}
+                      style={{ padding: '0.6rem 0.9rem', borderRadius: '0.75rem', maxWidth: '90%', fontSize: '0.82rem', lineHeight: 1.6, wordBreak: 'break-words' }}
+                    >
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                     {msg.sources?.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.4rem' }}>
                         {msg.sources.map((s, idx) => (
-                          <span key={idx} style={{ padding: '0.15rem 0.5rem', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '0.65rem' }}>description</span> {s.file}
+                          <span key={idx} className="source-chip" style={{ padding: '0.15rem 0.5rem', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '0.65rem' }}>description</span> {s.file}{s.section ? ` — ${s.section}` : ''}
                           </span>
                         ))}
                       </div>
@@ -757,26 +934,29 @@ export default function App() {
                   </div>
                 ))}
                 {isTyping && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.9rem', borderRadius: '0.75rem', borderTopLeftRadius: 0, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', width: 'fit-content' }}>
+                  <div className="chat-typing" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.9rem', borderRadius: '0.75rem', fontSize: '0.82rem', width: 'fit-content' }}>
                     <span className="material-symbols-outlined spin" style={{ fontSize: '0.9rem' }}>refresh</span> Processing…
                   </div>
                 )}
                 <div ref={endRef} />
               </div>
 
+              {/* Input */}
               <div style={{ flexShrink: 0, position: 'relative' }}>
                 <input
                   type="text" value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSend()}
                   placeholder="Ask anything…"
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.75rem', padding: '0.85rem 3rem 0.85rem 1rem', color: '#fff', fontSize: '0.82rem', fontFamily: 'Almarai, sans-serif', boxSizing: 'border-box' }}
+                  className="chat-input-box"
+                  style={{ width: '100%', borderRadius: '0.75rem', padding: '0.85rem 3rem 0.85rem 1rem', fontSize: '0.82rem', fontFamily: 'Almarai, sans-serif', boxSizing: 'border-box' }}
                 />
-                <button onClick={handleSend} disabled={!input.trim() || isTyping} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: input.trim() ? '#fff' : 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: 0 }}>
+                <button className="chat-send-btn" onClick={handleSend} disabled={!input.trim() || isTyping} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: input.trim() ? '#fff' : 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: 0 }}>
                   <span className="material-symbols-outlined">send</span>
                 </button>
               </div>
             </div>
+          </div>
 
             {/* LIBRARY */}
             <div className="liquid-glass reveal-on-scroll" style={{ borderRadius: '2rem', padding: '1.75rem', display: 'flex', flexDirection: 'column', transitionDelay: '0.3s', overflow: 'hidden' }}>

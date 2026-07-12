@@ -7,9 +7,9 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from backend.config import settings
-from backend.db.database import get_db
-from backend.db.models import User
+from backend.config.settings import settings
+from backend.core.database import get_db
+from backend.models.db_models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
