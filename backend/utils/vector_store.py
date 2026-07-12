@@ -1,5 +1,5 @@
 from pinecone import Pinecone, ServerlessSpec
-from backend.config import settings
+from backend.config.settings import settings
 
 _pinecone_client = None
 _pinecone_index = None
@@ -17,7 +17,7 @@ def get_pinecone_index():
         print(f"Creating Pinecone index '{settings.PINECONE_INDEX_NAME}'...")
         _pinecone_client.create_index(
             name=settings.PINECONE_INDEX_NAME,
-            dimension=768,  # BAAI/bge-base-en-v1.5 outputs 768-dim vectors
+            dimension=768,  # Gemini text-embedding-004 outputs 768-dim vectors
             metric="cosine",
             spec=ServerlessSpec(cloud="aws", region="us-east-1")
         )
