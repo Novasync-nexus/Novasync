@@ -723,8 +723,7 @@ export default function App() {
         {/* Bottom social pills */}
         <div style={{ position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '1rem', zIndex: 10 }}>
           {[
-            { icon: 'code', href: 'https://github.com/ThangaPreethi-03/Novasync' },
-            { icon: 'public', href: 'https://github.com/Novasync-nexus' },
+            { icon: 'photo_camera', href: 'https://instagram.com/__.satoru._.gojo.__1' },
             { icon: 'mail', href: 'mailto:thangapreethi85@gmail.com' }
           ].map(item => (
             <a key={item.icon} href={item.href} target="_blank" rel="noopener noreferrer" className="liquid-glass" style={{ width: '3rem', height: '3rem', borderRadius: '9999px', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s', textDecoration: 'none' }}
@@ -1009,10 +1008,9 @@ export default function App() {
             <p style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>© 2026 NOVASYNC. ALL RIGHTS RESERVED.</p>
           </div>
           <div style={{ display: 'flex', gap: '2.5rem', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
-            {['Privacy', 'Terms', 'Instagram'].map(item => (
-              <a key={item} href="#" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }}
-                onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>{item}</a>
-            ))}
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>Privacy</a>
+            <a href="#" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>Terms</a>
+            <a href="https://instagram.com/__.satoru._.gojo.__1" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>Instagram</a>
           </div>
         </div>
       </footer>
