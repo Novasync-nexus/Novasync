@@ -79,9 +79,10 @@ const GlobalStyle = () => (
     body.site-theme-pearl label,
     body.site-theme-pearl li { color: #1a1a1a !important; }
     body.site-theme-pearl .material-symbols-outlined { color: #1a1a1a !important; }
+    body.site-theme-pearl nav span:not(.material-symbols-outlined),
     body.site-theme-pearl nav a,
     body.site-theme-pearl nav button,
-    body.site-theme-pearl nav span { color: #ffffff !important; }
+    body.site-theme-pearl nav .material-symbols-outlined { color: #ffffff !important; }
     body.site-theme-pearl footer a,
     body.site-theme-pearl footer p,
     body.site-theme-pearl footer span { color: rgba(0,0,0,0.5) !important; }
