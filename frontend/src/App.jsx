@@ -67,6 +67,30 @@ const GlobalStyle = () => (
       border-color: rgba(0,0,0,0.3);
       box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
     }
+
+    /* Pearl: force all text dark, overriding inline white colors */
+    body.site-theme-pearl h1,
+    body.site-theme-pearl h2,
+    body.site-theme-pearl h3,
+    body.site-theme-pearl p,
+    body.site-theme-pearl span:not(.material-symbols-outlined),
+    body.site-theme-pearl a,
+    body.site-theme-pearl button,
+    body.site-theme-pearl label,
+    body.site-theme-pearl li { color: #1a1a1a !important; }
+    body.site-theme-pearl .material-symbols-outlined { color: #1a1a1a !important; }
+    body.site-theme-pearl nav a,
+    body.site-theme-pearl nav button,
+    body.site-theme-pearl nav span { color: #1a1a1a !important; }
+    body.site-theme-pearl footer a,
+    body.site-theme-pearl footer p,
+    body.site-theme-pearl footer span { color: rgba(0,0,0,0.5) !important; }
+    body.site-theme-pearl footer .material-symbols-outlined { color: #1a1a1a !important; }
+    /* Keep the hero section white-text since it sits over a dark video */
+    body.site-theme-pearl section:first-of-type h1,
+    body.site-theme-pearl section:first-of-type p,
+    body.site-theme-pearl section:first-of-type span { color: #fff !important; }
+
     body.site-theme-sakura {
       --site-bg: #1a0a10;
       --site-bg2: #210d14;
