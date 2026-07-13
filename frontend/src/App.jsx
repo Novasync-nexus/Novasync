@@ -27,17 +27,97 @@ const GlobalStyle = () => (
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Global Site Themes ─────────────────────────────────────────── */
+    body.site-theme-void {
+      --site-bg: #000000;
+      --site-bg2: #0a0a0a;
+      --site-fg: #ffffff;
+      --site-fg2: rgba(255,255,255,0.6);
+      --site-accent: rgba(255,255,255,0.12);
+      --site-border: rgba(255,255,255,0.08);
+      --site-scrollbar: #333;
+      background: #000; color: #fff;
+      scrollbar-color: #333 #000;
+    }
+    body.site-theme-pearl {
+      --site-bg: #f5f3ef;
+      --site-bg2: #eceae4;
+      --site-fg: #1a1a1a;
+      --site-fg2: rgba(0,0,0,0.55);
+      --site-accent: rgba(0,0,0,0.07);
+      --site-border: rgba(0,0,0,0.1);
+      --site-scrollbar: #bbb;
+      background: #f5f3ef; color: #1a1a1a;
+      scrollbar-color: #bbb #f5f3ef;
+    }
+    body.site-theme-pearl .liquid-glass {
+      background: rgba(0,0,0,0.04);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.08);
+    }
+    body.site-theme-pearl .liquid-glass::before {
+      background: linear-gradient(to bottom,rgba(0,0,0,0.12) 0%,transparent 40%,transparent 60%,rgba(0,0,0,0.12) 100%);
+    }
+    body.site-theme-pearl input::placeholder { color: rgba(0,0,0,0.3); }
+    body.site-theme-pearl .liquid-input {
+      background: rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+    body.site-theme-pearl .liquid-input:focus {
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.3);
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+    }
+    body.site-theme-sakura {
+      --site-bg: #1a0a10;
+      --site-bg2: #210d14;
+      --site-fg: #ffe4ec;
+      --site-fg2: rgba(255,200,215,0.65);
+      --site-accent: rgba(255,100,150,0.1);
+      --site-border: rgba(255,100,150,0.15);
+      --site-scrollbar: #7a3350;
+      background: #1a0a10; color: #ffe4ec;
+      scrollbar-color: #7a3350 #1a0a10;
+    }
+    body.site-theme-sakura .liquid-glass {
+      background: rgba(255,100,150,0.05);
+      box-shadow: inset 0 1px 1px rgba(255,150,180,0.15);
+    }
+    body.site-theme-sakura .liquid-glass::before {
+      background: linear-gradient(to bottom,rgba(255,150,180,0.3) 0%,transparent 40%,transparent 60%,rgba(255,150,180,0.3) 100%);
+    }
+    body.site-theme-sakura .reveal-line {
+      background: linear-gradient(90deg, transparent, rgba(255,150,180,0.5), transparent);
+    }
+    body.site-theme-ocean {
+      --site-bg: #020c1b;
+      --site-bg2: #041428;
+      --site-fg: #ccd6f6;
+      --site-fg2: rgba(136,180,240,0.65);
+      --site-accent: rgba(100,170,255,0.08);
+      --site-border: rgba(100,170,255,0.12);
+      --site-scrollbar: #1e4a7a;
+      background: #020c1b; color: #ccd6f6;
+      scrollbar-color: #1e4a7a #020c1b;
+    }
+    body.site-theme-ocean .liquid-glass {
+      background: rgba(100,170,255,0.04);
+      box-shadow: inset 0 1px 1px rgba(100,200,255,0.12);
+    }
+    body.site-theme-ocean .liquid-glass::before {
+      background: linear-gradient(to bottom,rgba(100,200,255,0.25) 0%,transparent 40%,transparent 60%,rgba(100,200,255,0.25) 100%);
+    }
+    body.site-theme-ocean .reveal-line {
+      background: linear-gradient(90deg, transparent, rgba(100,200,255,0.5), transparent);
+    }
+
     body {
-      background: #000;
-      color: #fff;
       font-family: 'Almarai', sans-serif;
       overflow-x: hidden;
-      scrollbar-width: thin;
-      scrollbar-color: #222 #000;
     }
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #000; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    ::-webkit-scrollbar-track { background: var(--site-bg, #000); }
+    ::-webkit-scrollbar-thumb { background: var(--site-scrollbar, #333); border-radius: 2px; }
+
 
     .liquid-glass {
       background: rgba(255,255,255,0.03);
@@ -255,12 +335,21 @@ const GlobalStyle = () => (
   `}</style>
 );
 
+// ── Site theme definitions ──────────────────────────────────────────────
+const SITE_THEMES = [
+  { id: 'void',    label: 'Void',   color: '#000000', textColor: '#ffffff' },
+  { id: 'pearl',   label: 'Pearl',  color: '#f5f3ef', textColor: '#1a1a1a' },
+  { id: 'sakura',  label: 'Sakura', color: '#ff6496', textColor: '#ffe4ec' },
+  { id: 'ocean',   label: 'Ocean',  color: '#1e6eb5', textColor: '#ccd6f6' },
+];
+
 // ── Chat theme definitions ──────────────────────────────────────────────
 const CHAT_THEMES = [
   { id: 'black',     label: 'Black',     color: '#000000' },
   { id: 'white',     label: 'White',     color: '#f4f4f4' },
   { id: 'terminal',  label: 'Terminal',  color: '#00ff41' },
 ];
+
 
 export default function App() {
   const [documents, setDocuments]   = useState([]);
@@ -274,6 +363,22 @@ export default function App() {
   const [isTyping, setIsTyping]     = useState(false);
   const [email, setEmail]           = useState('');
   const endRef = useRef(null);
+
+  // Site theme — persisted across sessions
+  const [siteTheme, setSiteTheme] = useState(() => {
+    const saved = localStorage.getItem('siteTheme');
+    return ['void','pearl','sakura','ocean'].includes(saved) ? saved : 'void';
+  });
+  const applySiteTheme = (id) => {
+    setSiteTheme(id);
+    localStorage.setItem('siteTheme', id);
+  };
+  // Apply site theme class to body
+  useEffect(() => {
+    document.body.className = document.body.className
+      .split(' ').filter(c => !c.startsWith('site-theme-')).join(' ');
+    document.body.classList.add(`site-theme-${siteTheme}`);
+  }, [siteTheme]);
 
   // Chat theme — persisted across sessions
   const [chatTheme, setChatTheme] = useState(() => {
@@ -657,7 +762,15 @@ export default function App() {
                onMouseEnter={e=>e.target.style.color='#fff'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.5)'}>About</a>
           </div>
           {/* Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Site Theme Picker */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.06)', borderRadius: '9999px', padding: '0.35rem 0.6rem' }}>
+              {SITE_THEMES.map(t => (
+                <button key={t.id} onClick={() => applySiteTheme(t.id)} title={t.label}
+                  style={{ width: '0.95rem', height: '0.95rem', borderRadius: '50%', background: t.color, border: siteTheme === t.id ? '2px solid rgba(255,255,255,0.85)' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.15s, border-color 0.15s', transform: siteTheme === t.id ? 'scale(1.25)' : 'scale(1)', outline: 'none', flexShrink: 0 }}
+                />
+              ))}
+            </div>
             {!token ? (
               <>
                 <button onClick={() => { setIsLogin(false); setAuthModalOpen(true); }} style={{ background: 'none', border: 'none', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>Sign Up</button>
@@ -672,6 +785,7 @@ export default function App() {
               </div>
             )}
           </div>
+
         </nav>
       </header>
 
