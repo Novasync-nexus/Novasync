@@ -849,7 +849,7 @@ export default function App() {
       </section>
 
       {/* ── ABOUT ── */}
-      <section id="about" className="about-section" style={{ background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+      <section id="about" className="about-section" style={{ background: 'var(--site-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <div className="reveal-on-scroll" style={{ maxWidth: '900px' }}>
           <span style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: '1.5rem' }}>About Nexus</span>
           <h2 style={{ fontFamily: 'Almarai, sans-serif', fontSize: 'clamp(2rem, 4.5vw, 3.25rem)', fontWeight: 300, lineHeight: 1.2, marginBottom: '2rem' }}>
@@ -871,7 +871,7 @@ export default function App() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{ padding: '8rem 2rem', background: '#000' }}>
+      <section id="features" style={{ padding: '8rem 2rem', background: 'var(--site-bg)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
           {[
             { num: '01', icon: 'upload_file',   title: 'Document Ingestion',   desc: 'Upload PDF, DOCX, TXT. Semantic chunking with SHA-256 dedup for blazing-fast incremental indexing.',    video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4' },
@@ -899,7 +899,7 @@ export default function App() {
       </section>
 
       {/* ── DASHBOARD ── */}
-      <section id="dashboard" className="dashboard-section" style={{ background: '#000' }}>
+      <section id="dashboard" className="dashboard-section" style={{ background: 'var(--site-bg)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div className="reveal-on-scroll" style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
@@ -1112,7 +1112,7 @@ export default function App() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ padding: '4rem 2rem', borderTop: '1px solid rgba(255,255,255,0.06)', background: '#000' }}>
+      <footer style={{ padding: '4rem 2rem', borderTop: '1px solid var(--site-border, rgba(255,255,255,0.06))', background: 'var(--site-bg)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
