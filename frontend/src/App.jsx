@@ -264,17 +264,17 @@ const GlobalStyle = () => (
 
     /* Theme: Black */
     .chat-theme-black { background: #0a0a0a !important; border-radius: 2rem; }
-    .chat-theme-black .chat-msg-user {
+    .chat-theme-black .chat-msg-user, .chat-theme-black .chat-msg-user p {
       background: #1a1a1a;
       border: none;
       border-radius: 1.25rem !important;
-      color: #ececec;
+      color: #ececec !important;
     }
-    .chat-theme-black .chat-msg-bot {
+    .chat-theme-black .chat-msg-bot, .chat-theme-black .chat-msg-bot p {
       background: transparent;
       border: none;
       border-radius: 0 !important;
-      color: #ececec;
+      color: #ececec !important;
       padding-left: 0;
     }
     .chat-theme-black .chat-input-box {
@@ -327,17 +327,17 @@ const GlobalStyle = () => (
 
     /* Theme: Terminal */
     .chat-theme-terminal { background: #0d0d0d !important; border-radius: 2rem; font-family: 'Courier New', monospace !important; }
-    .chat-theme-terminal .chat-msg-user {
+    .chat-theme-terminal .chat-msg-user, .chat-theme-terminal .chat-msg-user p {
       background: transparent;
       border: 1px solid #00ff41;
       border-radius: 4px !important;
-      color: #00ff41;
+      color: #00ff41 !important;
     }
-    .chat-theme-terminal .chat-msg-bot {
+    .chat-theme-terminal .chat-msg-bot, .chat-theme-terminal .chat-msg-bot p {
       background: transparent;
       border: none;
       border-radius: 0 !important;
-      color: #00e535;
+      color: #00e535 !important;
       padding-left: 0;
     }
     .chat-theme-terminal .chat-msg-bot::before { content: '> '; opacity: 0.5; }
@@ -792,7 +792,7 @@ export default function App() {
               
               {/* Google Button */}
               <div>
-                <button type="button" onClick={() => window.location.href = '#'} style={{ width: '100%', padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+                <button type="button" onClick={() => setAuthError('Google Sign-In is not configured yet. Please use email/password.')} style={{ width: '100%', padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}>
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style={{ width: '18px', height: '18px' }} />
