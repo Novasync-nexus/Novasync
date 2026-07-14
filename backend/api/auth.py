@@ -18,6 +18,13 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = await AuthService.authenticate_user(db, form_data.username, form_data.password)
     return {"access_token": access_token, "token_type": "bearer"}
 
+from backend.schemas.auth import GoogleToken
+
+@router.post("/google", response_model=Token)
+async def login_with_google(token_data: GoogleToken, db: AsyncSession = Depends(get_db)):
+    access_token = await AuthService.authenticate_google_user(db, token_data.token)
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @router.get("/me", response_model=UserResponse)
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user

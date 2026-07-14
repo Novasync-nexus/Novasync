@@ -40,6 +40,55 @@ class AuthService:
             data={"sub": user.email}, expires_delta=access_token_expires
         )
         return access_token
+
+    @staticmethod
+    async def authenticate_google_user(db: AsyncSession, token: str):
+        from google.oauth2 import id_token
+        from google.auth.transport import requests
+        import os
+
+        try:
+            # Specify the CLIENT_ID of the app that accesses the backend:
+            client_id = os.environ.get("GOOGLE_CLIENT_ID")
+            if not client_id:
+                raise ValueError("GOOGLE_CLIENT_ID is not configured on the server")
+            
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
+            
+            email = idinfo.get("email")
+            name = idinfo.get("name")
+            
+            if not email:
+                raise ValueError("Email not provided by Google")
+                
+            # Check if user exists
+            result = await db.execute(select(User).where(User.email == email))
+            user = result.scalars().first()
+            
+            if not user:
+                # Create a new user since they don't exist
+                user = User(
+                    email=email,
+                    username=name,
+                    hashed_password="OAUTH_LOGIN_NO_PASSWORD" # Mark as OAuth user
+                )
+                db.add(user)
+                await db.commit()
+                await db.refresh(user)
+                
+            # Create access token
+            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = create_access_token(
+                data={"sub": user.email}, expires_delta=access_token_expires
+            )
+            return access_token
+            
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Google authentication failed: {str(e)}",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
     
     @staticmethod
     async def update_user(db: AsyncSession, user: User, data: UserUpdate):

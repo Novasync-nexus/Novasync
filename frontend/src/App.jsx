@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { useDropzone } from 'react-dropzone';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -522,6 +523,24 @@ export default function App() {
     }
   };
 
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (credentialResponse) => {
+      setAuthError('');
+      try {
+        const res = await axios.post(`${API_BASE}/auth/google`, {
+          token: credentialResponse.access_token
+        });
+        setToken(res.data.access_token);
+        setAuthModalOpen(false);
+      } catch (err) {
+        setAuthError(err.response?.data?.detail || 'Google Authentication failed');
+      }
+    },
+    onError: () => {
+      setAuthError('Google Sign-In failed.');
+    }
+  });
+
   const logout = () => {
     setToken(null);
   };
@@ -792,7 +811,7 @@ export default function App() {
               
               {/* Google Button */}
               <div>
-                <button type="button" onClick={() => setAuthError('Google Sign-In is not configured yet. Please use email/password.')} style={{ width: '100%', padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+                <button type="button" onClick={() => loginWithGoogle()} style={{ width: '100%', padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}>
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style={{ width: '18px', height: '18px' }} />
