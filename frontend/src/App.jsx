@@ -91,6 +91,21 @@ const GlobalStyle = () => (
     body.site-theme-pearl section:first-of-type h1,
     body.site-theme-pearl section:first-of-type p,
     body.site-theme-pearl section:first-of-type span { color: #fff !important; }
+    /* Explore platform button visible */
+    body.site-theme-pearl a.liquid-glass,
+    body.site-theme-pearl button.liquid-glass { color: #1a1a1a !important; }
+    /* Auth modal — force dark text on white background */
+    body.site-theme-pearl [role="dialog"] h2,
+    body.site-theme-pearl [role="dialog"] p,
+    body.site-theme-pearl [role="dialog"] span,
+    body.site-theme-pearl [role="dialog"] label,
+    body.site-theme-pearl [role="dialog"] input,
+    body.site-theme-pearl [role="dialog"] button { color: #1a1a1a !important; }
+    /* Chat area — dark text */
+    body.site-theme-pearl .chat-msg-bot,
+    body.site-theme-pearl .chat-msg-user { color: #1a1a1a !important; }
+    body.site-theme-pearl .chat-input-box { color: #1a1a1a !important; background: rgba(0,0,0,0.04) !important; border: 1px solid rgba(0,0,0,0.15) !important; }
+
 
     body.site-theme-sakura {
       --site-bg: #1a0a10;
@@ -114,26 +129,47 @@ const GlobalStyle = () => (
       background: linear-gradient(90deg, transparent, rgba(255,150,180,0.5), transparent);
     }
     body.site-theme-ocean {
-      --site-bg: #020c1b;
-      --site-bg2: #041428;
-      --site-fg: #ccd6f6;
-      --site-fg2: rgba(136,180,240,0.65);
-      --site-accent: rgba(100,170,255,0.08);
-      --site-border: rgba(100,170,255,0.12);
-      --site-scrollbar: #1e4a7a;
-      background: #020c1b; color: #ccd6f6;
-      scrollbar-color: #1e4a7a #020c1b;
+      --site-bg: #e8f4fd;
+      --site-bg2: #d0e8f7;
+      --site-fg: #0a2540;
+      --site-fg2: rgba(10,37,64,0.6);
+      --site-accent: rgba(14,165,233,0.12);
+      --site-border: rgba(14,165,233,0.2);
+      --site-scrollbar: #7ec8e3;
+      background: #e8f4fd; color: #0a2540;
+      scrollbar-color: #7ec8e3 #e8f4fd;
     }
     body.site-theme-ocean .liquid-glass {
-      background: rgba(100,170,255,0.04);
-      box-shadow: inset 0 1px 1px rgba(100,200,255,0.12);
+      background: rgba(14,165,233,0.08);
+      box-shadow: inset 0 1px 1px rgba(14,165,233,0.2);
     }
     body.site-theme-ocean .liquid-glass::before {
-      background: linear-gradient(to bottom,rgba(100,200,255,0.25) 0%,transparent 40%,transparent 60%,rgba(100,200,255,0.25) 100%);
+      background: linear-gradient(to bottom,rgba(14,165,233,0.3) 0%,transparent 40%,transparent 60%,rgba(14,165,233,0.3) 100%);
     }
     body.site-theme-ocean .reveal-line {
-      background: linear-gradient(90deg, transparent, rgba(100,200,255,0.5), transparent);
+      background: linear-gradient(90deg, transparent, rgba(14,165,233,0.6), transparent);
     }
+    /* Ocean: dark text on light sky background */
+    body.site-theme-ocean h1,
+    body.site-theme-ocean h2,
+    body.site-theme-ocean h3,
+    body.site-theme-ocean p,
+    body.site-theme-ocean span:not(.material-symbols-outlined),
+    body.site-theme-ocean a,
+    body.site-theme-ocean button,
+    body.site-theme-ocean label,
+    body.site-theme-ocean li { color: #0a2540 !important; }
+    body.site-theme-ocean .material-symbols-outlined { color: #0e6ea8 !important; }
+    body.site-theme-ocean nav span:not(.material-symbols-outlined),
+    body.site-theme-ocean nav a,
+    body.site-theme-ocean nav button,
+    body.site-theme-ocean nav .material-symbols-outlined { color: #ffffff !important; }
+    body.site-theme-ocean section:first-of-type h1,
+    body.site-theme-ocean section:first-of-type p,
+    body.site-theme-ocean section:first-of-type span { color: #fff !important; }
+    body.site-theme-ocean footer a,
+    body.site-theme-ocean footer p,
+    body.site-theme-ocean footer span { color: rgba(10,37,64,0.5) !important; }
 
     body {
       font-family: 'Almarai', sans-serif;
@@ -471,6 +507,20 @@ export default function App() {
   const handleAuth = async (e) => {
     e.preventDefault();
     setAuthError('');
+
+    // Client-side email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(authEmail)) {
+      setAuthError('Please enter a valid email address (e.g. name@example.com).');
+      return;
+    }
+
+    // Password length check on register
+    if (!isLogin && authPassword.length < 8) {
+      setAuthError('Password must be at least 8 characters long.');
+      return;
+    }
+
     try {
       if (isLogin) {
         const fd = new URLSearchParams();
@@ -485,7 +535,12 @@ export default function App() {
         setAuthError('Registration successful. Please login.');
       }
     } catch (err) {
-      setAuthError(err.response?.data?.detail || 'Authentication failed');
+      const detail = err.response?.data?.detail;
+      if (detail === 'Email already registered') {
+        setAuthError('This email is already registered. Please log in instead.');
+      } else {
+        setAuthError(detail || 'Something went wrong. Please try again.');
+      }
     }
   };
 
@@ -897,11 +952,23 @@ export default function App() {
 
       {/* ── FEATURES ── */}
       <section id="features" style={{ padding: '8rem 2rem', background: 'var(--site-bg)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          {/* Section Header */}
+          <div className="reveal-on-scroll" style={{ textAlign: 'center', marginBottom: '5rem' }}>
+            <span style={{ fontSize: '0.65rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: '1.5rem' }}>What We Offer</span>
+            <h2 style={{ fontFamily: 'Almarai, sans-serif', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 300, lineHeight: 1.2, marginBottom: '1.25rem' }}>
+              Everything you need to <span className="italic-em" style={{ color: 'rgba(255,255,255,0.8)' }}>study smarter</span>
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.55)', maxWidth: '580px', margin: '0 auto', lineHeight: 1.7 }}>
+              Nexus turns your study materials into an interactive AI assistant — so you spend less time searching and more time understanding.
+            </p>
+          </div>
+          {/* Feature Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
           {[
-            { num: '01', icon: 'upload_file',   title: 'Document Ingestion',   desc: 'Upload PDF, DOCX, TXT. Semantic chunking with SHA-256 dedup for blazing-fast incremental indexing.',    video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4' },
-            { num: '02', icon: 'manage_search', title: 'Hybrid Retrieval',     desc: 'Combines ChromaDB semantic search with BM25 keyword search, reranked by a Cross-Encoder for precision.', video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4' },
-            { num: '03', icon: 'forum',         title: 'Streaming AI Chat',    desc: 'Real-time answers powered by Groq / Llama 3.3 70B. Ask questions, get verifiable answers with citations.', video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4' },
+            { num: '01', icon: 'upload_file',   title: 'Upload Your Materials',   desc: 'Drop in any PDF, Word doc, or text file. Nexus reads and understands your documents instantly — no setup needed.', video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4' },
+            { num: '02', icon: 'manage_search', title: 'Smart Search',     desc: 'Ask any question and get the most relevant answer from your documents. Nexus finds exactly what you need, even if you do not remember the exact words.', video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4' },
+            { num: '03', icon: 'forum',         title: 'Chat with Your Notes',    desc: 'Have a real conversation with your study materials. Ask follow-up questions, get summaries, and receive answers with exact references so you always know the source.', video: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4' },
           ].map(({ num, title, desc, video }, i) => (
             <div key={i} className="liquid-glass reveal-on-scroll" style={{ borderRadius: '2rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', transitionDelay: `${i * 0.1}s` }}>
               <div style={{ aspectRatio: '1/1', position: 'relative', overflow: 'hidden' }}>
@@ -920,8 +987,10 @@ export default function App() {
               </div>
             </div>
           ))}
+          </div>
         </div>
       </section>
+
 
       {/* ── DASHBOARD ── */}
       <section id="dashboard" className="dashboard-section" style={{ background: 'var(--site-bg)' }}>
