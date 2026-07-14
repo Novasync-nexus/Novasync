@@ -726,9 +726,6 @@ export default function App() {
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>{user?.username || '—'}</span>
-                    <button onClick={() => { setEditUsernameInput(user?.username || ''); setIsEditingUsername(true); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '0.9rem' }}>edit</span>
                     <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{user?.username || 'User'}</span>
                     <span className="material-symbols-outlined" style={{ fontSize: '0.9rem', cursor: 'pointer', color: 'rgba(255,255,255,0.4)' }} onClick={() => { setEditUsernameInput(user?.username || ''); setIsEditingUsername(true); }}>edit</span>
                   </div>
