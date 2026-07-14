@@ -749,6 +749,7 @@ export default function App() {
               Sign Out
             </button>
           </div>
+        </div>
       )}
 
       {/* Logout Confirmation Modal */}
