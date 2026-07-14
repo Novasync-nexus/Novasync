@@ -69,42 +69,24 @@ const GlobalStyle = () => (
     }
 
     /* Pearl: force all text dark, overriding inline white colors */
-    body.site-theme-pearl h1,
-    body.site-theme-pearl h2,
-    body.site-theme-pearl h3,
-    body.site-theme-pearl p,
-    body.site-theme-pearl span:not(.material-symbols-outlined),
-    body.site-theme-pearl a,
-    body.site-theme-pearl button,
-    body.site-theme-pearl label,
-    body.site-theme-pearl li { color: #1a1a1a !important; }
-    body.site-theme-pearl .material-symbols-outlined { color: #1a1a1a !important; }
+    /* Pearl: force text dark, but EXCLUDE chat, modals, and liquid-glass buttons */
+    body.site-theme-pearl section:not(:first-of-type) h1,
+    body.site-theme-pearl section:not(:first-of-type) h2,
+    body.site-theme-pearl section:not(:first-of-type) h3,
+    body.site-theme-pearl section:not(:first-of-type) p,
+    body.site-theme-pearl section:not(:first-of-type) span:not(.material-symbols-outlined):not(.chat-typing) { color: #1a1a1a !important; }
+    
+    body.site-theme-pearl section:not(:first-of-type) .material-symbols-outlined:not(.chat-empty-icon) { color: #1a1a1a !important; }
+    
     body.site-theme-pearl nav span:not(.material-symbols-outlined),
     body.site-theme-pearl nav a,
     body.site-theme-pearl nav button,
     body.site-theme-pearl nav .material-symbols-outlined { color: #ffffff !important; }
+    
     body.site-theme-pearl footer a,
     body.site-theme-pearl footer p,
     body.site-theme-pearl footer span { color: rgba(0,0,0,0.5) !important; }
     body.site-theme-pearl footer .material-symbols-outlined { color: #1a1a1a !important; }
-    /* Keep the hero section white-text since it sits over a dark video */
-    body.site-theme-pearl section:first-of-type h1,
-    body.site-theme-pearl section:first-of-type p,
-    body.site-theme-pearl section:first-of-type span { color: #fff !important; }
-    /* Explore platform button visible */
-    body.site-theme-pearl a.liquid-glass,
-    body.site-theme-pearl button.liquid-glass { color: #1a1a1a !important; }
-    /* Auth modal — force dark text on white background */
-    body.site-theme-pearl [role="dialog"] h2,
-    body.site-theme-pearl [role="dialog"] p,
-    body.site-theme-pearl [role="dialog"] span,
-    body.site-theme-pearl [role="dialog"] label,
-    body.site-theme-pearl [role="dialog"] input,
-    body.site-theme-pearl [role="dialog"] button { color: #1a1a1a !important; }
-    /* Chat area — dark text */
-    body.site-theme-pearl .chat-msg-bot,
-    body.site-theme-pearl .chat-msg-user { color: #1a1a1a !important; }
-    body.site-theme-pearl .chat-input-box { color: #1a1a1a !important; background: rgba(0,0,0,0.04) !important; border: 1px solid rgba(0,0,0,0.15) !important; }
 
 
     body.site-theme-sakura {
@@ -149,24 +131,20 @@ const GlobalStyle = () => (
     body.site-theme-ocean .reveal-line {
       background: linear-gradient(90deg, transparent, rgba(14,165,233,0.6), transparent);
     }
-    /* Ocean: dark text on light sky background */
-    body.site-theme-ocean h1,
-    body.site-theme-ocean h2,
-    body.site-theme-ocean h3,
-    body.site-theme-ocean p,
-    body.site-theme-ocean span:not(.material-symbols-outlined),
-    body.site-theme-ocean a,
-    body.site-theme-ocean button,
-    body.site-theme-ocean label,
-    body.site-theme-ocean li { color: #0a2540 !important; }
-    body.site-theme-ocean .material-symbols-outlined { color: #0e6ea8 !important; }
+    /* Ocean: dark text on light sky background, EXCLUDE chat, modals, and liquid-glass */
+    body.site-theme-ocean section:not(:first-of-type) h1,
+    body.site-theme-ocean section:not(:first-of-type) h2,
+    body.site-theme-ocean section:not(:first-of-type) h3,
+    body.site-theme-ocean section:not(:first-of-type) p,
+    body.site-theme-ocean section:not(:first-of-type) span:not(.material-symbols-outlined):not(.chat-typing) { color: #0a2540 !important; }
+    
+    body.site-theme-ocean section:not(:first-of-type) .material-symbols-outlined:not(.chat-empty-icon) { color: #0e6ea8 !important; }
+    
     body.site-theme-ocean nav span:not(.material-symbols-outlined),
     body.site-theme-ocean nav a,
     body.site-theme-ocean nav button,
     body.site-theme-ocean nav .material-symbols-outlined { color: #ffffff !important; }
-    body.site-theme-ocean section:first-of-type h1,
-    body.site-theme-ocean section:first-of-type p,
-    body.site-theme-ocean section:first-of-type span { color: #fff !important; }
+    
     body.site-theme-ocean footer a,
     body.site-theme-ocean footer p,
     body.site-theme-ocean footer span { color: rgba(10,37,64,0.5) !important; }
@@ -802,6 +780,23 @@ export default function App() {
                   onMouseDown={e => e.currentTarget.style.transform = 'scale(0.96)'}
                   onMouseUp={e => e.currentTarget.style.transform = 'scale(1.02)'}>
                   {isLogin ? 'Sign In' : 'Create Account'}
+                </button>
+              </div>
+              
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                <span style={{ padding: '0 0.75rem', fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Or</span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+              </div>
+              
+              {/* Google Button */}
+              <div>
+                <button type="button" onClick={() => window.location.href = '#'} style={{ width: '100%', padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.15)', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}>
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style={{ width: '18px', height: '18px' }} />
+                  Continue with Google
                 </button>
               </div>
             </form>
