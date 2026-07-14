@@ -542,7 +542,9 @@ export default function App() {
   });
 
   const logout = () => {
-    setToken(null);
+    if (window.confirm("Are you sure you want to log out?")) {
+      setToken(null);
+    }
   };
   useEffect(() => {
     if (chatHistory.length > 0) endRef.current?.scrollIntoView({ behavior: 'smooth' });
