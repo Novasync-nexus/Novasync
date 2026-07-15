@@ -43,17 +43,20 @@ class AuthService:
 
     @staticmethod
     async def authenticate_google_user(db: AsyncSession, token: str):
-        from google.oauth2 import id_token
-        from google.auth.transport import requests
-        import os
+        import httpx
 
         try:
-            # Specify the CLIENT_ID of the app that accesses the backend:
-            client_id = os.environ.get("GOOGLE_CLIENT_ID")
-            if not client_id:
-                raise ValueError("GOOGLE_CLIENT_ID is not configured on the server")
-            
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
+            # useGoogleLogin returns an access token, so we fetch the user's profile from Google
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    headers={"Authorization": f"Bearer {token}"}
+                )
+                
+            if response.status_code != 200:
+                raise ValueError("Invalid Google access token")
+                
+            idinfo = response.json()
             
             email = idinfo.get("email")
             name = idinfo.get("name")
