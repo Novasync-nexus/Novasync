@@ -754,21 +754,22 @@ export default function App() {
 
       {/* Logout Confirmation Modal */}
       {logoutConfirmOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', padding: '1rem' }}>
-          <div className="liquid-glass fade-in-up" role="dialog" style={{ width: '100%', maxWidth: '380px', borderRadius: '1.5rem', padding: '2.5rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto', background: 'rgba(10,10,10,0.95)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '3rem', color: '#ff6496', marginBottom: '1rem' }}>logout</span>
-            <h3 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '0.75rem', fontWeight: 600, fontFamily: "'Instrument Serif', serif" }}>Confirm Sign Out</h3>
-            <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', textAlign: 'center', marginBottom: '2rem', lineHeight: 1.5 }}>Are you sure you want to log out of your NovaSync workspace?</p>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', padding: '1rem' }}>
+          <div className="liquid-glass fade-in-up" role="dialog" style={{ width: '100%', maxWidth: '380px', borderRadius: '1.5rem', padding: '2.5rem 2rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '3rem', color: '#dedbc8', marginBottom: '1rem' }}>logout</span>
+            <h3 style={{ fontSize: '1.75rem', color: '#fff', marginBottom: '0.75rem', fontWeight: 400, fontFamily: "'Instrument Serif', serif" }}>Confirm Sign Out</h3>
+            <div className="reveal-line" style={{ width: '100%', marginBottom: '1.5rem' }}></div>
+            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', textAlign: 'center', marginBottom: '2rem', lineHeight: 1.5 }}>Are you sure you want to log out of your NovaSync workspace?</p>
             
             <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-              <button onClick={() => setLogoutConfirmOpen(false)} style={{ flex: 1, padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              <button onClick={() => setLogoutConfirmOpen(false)} style={{ flex: 1, padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, transition: 'all 0.3s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'scale(1)'; }}>
                 Cancel
               </button>
-              <button onClick={confirmLogout} style={{ flex: 1, padding: '0.9rem', borderRadius: '9999px', background: '#ff6496', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(255,100,150,0.3)' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+              <button onClick={confirmLogout} style={{ flex: 1, padding: '0.9rem', borderRadius: '9999px', background: 'rgba(255,100,100,0.1)', color: '#ff6496', border: '1px solid rgba(255,100,100,0.3)', cursor: 'pointer', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, transition: 'all 0.3s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,100,100,0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,100,100,0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}>
                 Sign Out
               </button>
             </div>
