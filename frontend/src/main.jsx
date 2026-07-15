@@ -4,10 +4,10 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import './index.css'
 import App from './App.jsx'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-if (!GOOGLE_CLIENT_ID) {
-  console.error("CRITICAL ERROR: VITE_GOOGLE_CLIENT_ID is missing from environment variables!");
+if (GOOGLE_CLIENT_ID === 'dummy-client-id.apps.googleusercontent.com') {
+  console.error("CRITICAL ERROR: VITE_GOOGLE_CLIENT_ID is missing from environment variables! Using dummy ID.");
 }
 
 createRoot(document.getElementById('root')).render(
